@@ -839,11 +839,14 @@ boot(function(){
   }
   gsap.registerPlugin(ScrollTrigger);
 
-  /* nav gains a solid background after the hero — a state change, not motion,
-     so it runs in reduced-motion too */
+  /* Nav goes solid the moment the hero FRAME's top edge reaches the nav band -
+     not when the hero section ends. Tied to the hero's bottom it fired at
+     scrollY 1311 while the photograph slid under the nav at 609, leaving ~702px
+     of scrolling with --ink-mute links over a dark image. A state change, not
+     motion, so it runs in reduced-motion too. */
   ScrollTrigger.create({
-    trigger: '#hero',
-    start: 'bottom top+=78',
+    trigger: '.hero-frame',
+    start: 'top top+=78',
     onEnter: function(){ document.getElementById('nav').classList.add('solid'); },
     onLeaveBack: function(){ document.getElementById('nav').classList.remove('solid'); }
   });
