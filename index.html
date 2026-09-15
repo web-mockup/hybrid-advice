@@ -139,8 +139,19 @@ button{font:inherit;color:inherit;}
   border-bottom-color:var(--rule);
 }
 .nav-inner{display:flex;align-items:center;justify-content:space-between;height:78px;}
-.wordmark{display:flex;align-items:center;gap:10px;font-weight:600;font-size:17px;letter-spacing:-.02em;}
-.wordmark .mark{width:11px;height:11px;border-radius:50%;background:var(--clay);flex:none;}
+/* Hybrid Advice's own logo. The supplied files are lime and white on
+   transparency, so neither reads on the light nav - we paint through the
+   alpha channel instead, letting one file serve both nav and footer. */
+.wordmark{display:flex;align-items:center;}
+.wordmark .logo{
+  display:block;width:150px;height:32px;
+  background-color:var(--ink);
+  -webkit-mask:url('assets/hybrid-logo-white.png') no-repeat left center;
+  mask:url('assets/hybrid-logo-white.png') no-repeat left center;
+  -webkit-mask-size:contain;mask-size:contain;
+  transition:background-color .5s var(--ease);
+}
+.footer .wordmark .logo{background-color:var(--paper);}
 .nav-links{display:flex;align-items:center;gap:38px;}
 .nav-links a{font-size:15px;font-weight:500;color:var(--ink-mute);transition:color .3s var(--ease);}
 .nav-links a:hover{color:var(--ink);}
@@ -161,20 +172,38 @@ button{font:inherit;color:inherit;}
   content:"";position:absolute;inset:0;opacity:.42;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.34' numOctaves='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='260' height='260' filter='url(%23n)' opacity='.85'/></svg>");
 }
-.ph-body{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-start;padding:26px;gap:10px;}
+/* Real photography sits under the existing gradient, which stays as a fallback. */
+.ph-img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+  filter:saturate(.58) contrast(1.06) brightness(1.02);
+}
+/* Palette grade. These frames come from unrelated photographers; pulling every
+   one toward the sage/clay range is what makes the set read as one commission
+   rather than five stock picks. */
+.ph::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(148deg,rgba(201,111,79,.34) 0%,rgba(106,141,136,.22) 46%,rgba(47,68,65,.58) 100%);
+  mix-blend-mode:soft-light;
+}
+.ph .ticks{z-index:3;}
+.ph-body{
+  position:absolute;inset:0;z-index:4;
+  display:flex;flex-direction:column;justify-content:flex-start;padding:26px;gap:10px;
+  background:linear-gradient(180deg,rgba(15,30,27,.80) 0%,rgba(15,30,27,.42) 38%,rgba(15,30,27,0) 72%);
+}
 .ph-tag{
   align-self:flex-start;display:inline-flex;align-items:center;gap:7px;
-  padding:6px 12px;border-radius:999px;background:rgba(19,37,34,.72);
+  padding:6px 12px;border-radius:999px;background:rgba(19,37,34,.82);
   color:rgba(247,244,238,.95);
   font-size:10px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
 }
 .ph-tag .sq{width:5px;height:5px;background:var(--lime);border-radius:1px;flex:none;}
 .ph-note{
-  font-size:13px;font-weight:500;line-height:1.45;color:rgba(19,37,34,.72);max-width:40ch;
-  text-shadow:0 1px 0 rgba(255,255,255,.25);
+  font-size:13px;font-weight:500;line-height:1.45;color:rgba(247,244,238,.94);max-width:40ch;
+  text-shadow:0 1px 3px rgba(0,0,0,.35);
 }
 .ph .ticks{position:absolute;inset:18px;pointer-events:none;}
-.ph .ticks span{position:absolute;width:13px;height:13px;border-color:rgba(28,43,40,.22);border-style:solid;border-width:0;}
+.ph .ticks span{position:absolute;width:13px;height:13px;border-color:rgba(247,244,238,.30);border-style:solid;border-width:0;}
 .ph .ticks span:nth-child(1){top:0;left:0;border-top-width:1px;border-left-width:1px;}
 .ph .ticks span:nth-child(2){top:0;right:0;border-top-width:1px;border-right-width:1px;}
 .ph .ticks span:nth-child(3){bottom:0;left:0;border-bottom-width:1px;border-left-width:1px;}
@@ -194,6 +223,15 @@ button{font:inherit;color:inherit;}
   transform-origin:center top;will-change:transform;
 }
 .hero-media .ph-note{font-size:14px;max-width:34ch;}
+/* The hero frame is already backlit and moody. The shared grade sinks it too
+   far against the warm paper above, so lift it and ease off the sage. */
+.hero-media .ph-img{filter:saturate(.66) contrast(1.0) brightness(1.30);}
+.hero-media::after{
+  background:linear-gradient(148deg,rgba(201,111,79,.30) 0%,rgba(106,141,136,.14) 50%,rgba(47,68,65,.26) 100%);
+}
+.hero-media .ph-body{
+  background:linear-gradient(180deg,rgba(15,30,27,.72) 0%,rgba(15,30,27,.30) 34%,rgba(15,30,27,0) 62%);
+}
 /* The hero plate is 16:9 and taller than the fold, so only its top band is ever
    in frame — including in the 1920x1080 deck capture. Run the tonal range
    horizontally so that band carries real depth instead of reading as empty. */
@@ -272,7 +310,7 @@ button{font:inherit;color:inherit;}
 /* ---------- footer ---------- */
 .footer{background:var(--green-black);color:rgba(247,244,238,.6);padding:72px 0 88px;}
 .footer-inner{display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;align-items:flex-start;}
-.footer .wordmark{color:var(--paper);}
+
 .reg-placeholder{
   flex:1;min-width:320px;max-width:620px;
   border:1px dashed rgba(247,244,238,.26);border-radius:5px;padding:20px 22px;
@@ -299,6 +337,7 @@ button{font:inherit;color:inherit;}
   :root{--gutter:22px;}
   .nav-links{display:none;}
   .nav .btn{padding:11px 18px;font-size:13px;}
+  .wordmark .logo{width:118px;height:25px;}
   .hero{padding-top:128px;}
   .hero h1{max-width:100%;}
   .hero-ctas{margin-bottom:60px;}
@@ -328,7 +367,7 @@ button{font:inherit;color:inherit;}
 
 <header class="nav" id="nav">
   <div class="wrap nav-inner">
-    <a href="#top" class="wordmark"><span class="mark"></span>hybrid advice</a>
+    <a href="#top" class="wordmark" aria-label="Hybrid Advice"><span class="logo"></span></a>
     <nav class="nav-links">
       <a href="#model">The model</a>
       <a href="#keep">What you keep</a>
@@ -356,10 +395,11 @@ button{font:inherit;color:inherit;}
       </div>
     </div>
     <div class="ph hero-media hero-fade" data-load="6" id="heroMedia">
+      <img class="ph-img" src="assets/hero-principal.jpg" alt="" style="object-position:center 30%">
       <div class="ticks"><span></span><span></span><span></span><span></span></div>
       <div class="ph-body">
-        <span class="ph-tag"><span class="sq"></span>Image placeholder</span>
-        <span class="ph-note">Documentary portrait — a partner firm principal in their own office. Natural light, unposed, shot on location.</span>
+        <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
+        <span class="ph-note">Documentary portrait — a partner firm principal in their own office. Stand-in frame; final photography to be commissioned.</span>
       </div>
     </div>
   </section>
@@ -465,10 +505,11 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
+            <img class="ph-img" src="assets/hub-southernhay.jpg" alt="" style="object-position:center 40%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
-              <span class="ph-tag"><span class="sq"></span>Image placeholder</span>
-              <span class="ph-note">Southernhay's own office, Southernhay West, Exeter.</span>
+              <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
+              <span class="ph-note">Southernhay's own office, Southernhay West, Exeter. Stand-in frame.</span>
             </div>
           </div>
           <h3 class="h3 hub-name">Southernhay Financial Planning</h3>
@@ -478,10 +519,11 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
+            <img class="ph-img" src="assets/hub-darblay.jpg" alt="" style="object-position:center 45%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
-              <span class="ph-tag"><span class="sq"></span>Image placeholder</span>
-              <span class="ph-note">D'Arblay's own office and the surrounding London street.</span>
+              <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
+              <span class="ph-note">D'Arblay's own office and the surrounding London street. Stand-in frame.</span>
             </div>
           </div>
           <h3 class="h3 hub-name">D'Arblay Wealth</h3>
@@ -491,10 +533,11 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
+            <img class="ph-img" src="assets/hub-miraclair.jpg" alt="" style="object-position:center 38%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
-              <span class="ph-tag"><span class="sq"></span>Image placeholder</span>
-              <span class="ph-note">Miraclair's own offices in London and Nice.</span>
+              <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
+              <span class="ph-note">Miraclair's own offices in London and Nice. Stand-in frame.</span>
             </div>
           </div>
           <h3 class="h3 hub-name">Miraclair Wealth</h3>
@@ -504,10 +547,11 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
+            <img class="ph-img" src="assets/hub-aspirations.jpg" alt="" style="object-position:center 42%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
-              <span class="ph-tag"><span class="sq"></span>Image placeholder</span>
-              <span class="ph-note">Aspirations' own office and the surrounding Bristol high street.</span>
+              <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
+              <span class="ph-note">Aspirations' own office and the surrounding Bristol high street. Stand-in frame.</span>
             </div>
           </div>
           <h3 class="h3 hub-name">Aspirations Financial Planning</h3>
@@ -532,7 +576,7 @@ button{font:inherit;color:inherit;}
 
 <footer class="footer">
   <div class="wrap footer-inner">
-    <a href="#top" class="wordmark"><span class="mark"></span>hybrid advice</a>
+    <a href="#top" class="wordmark" aria-label="Hybrid Advice"><span class="logo"></span></a>
     <div class="reg-placeholder">
       <span class="rp-tag">Regulatory footer — placeholder</span>
       Company registration, registered office, FCA authorisation and trading-name disclosures to be supplied by Hybrid Advice and set in this block.
