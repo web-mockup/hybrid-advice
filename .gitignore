@@ -1,10 +1,69 @@
-# Verification captures and deck exports live outside this repo
-# (Cargo/refs, Cargo/deliverables).
+# ---------------------------------------------------------------------------
+# NOTE: everything still tracked in this repo IS the website. GitHub Pages
+# serves the repo, so index.html, assets/, fonts/ and vendor/ cannot be
+# ignored - ignoring them would publish a broken page. What follows is
+# everything that could legitimately appear here and should never be pushed.
+# ---------------------------------------------------------------------------
+
+# Working artefacts (these live outside the repo, in Cargo/refs and
+# Cargo/deliverables - listed here in case anything lands inside it)
 refs/
-.playwright-mcp/
 deliverables/
+.playwright-mcp/
 _tmp/
-# Stray captures at the repo ROOT only - anchored so it cannot swallow
-# assets/*.png, which is where the real logo files live.
+scratch/
+tmp/
+
+# Stray screen captures at the repo ROOT only. Anchored with a leading slash
+# so it can never swallow assets/*.png, which is where the logo lives.
 /*.png
-!og.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.webp
+/*.pdf
+/*.mov
+/*.mp4
+
+# macOS
+.DS_Store
+**/.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows / Linux desktop cruft
+Thumbs.db
+desktop.ini
+*~
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# Tooling that has no business in a no-build concept page
+node_modules/
+package.json
+package-lock.json
+yarn.lock
+.cache/
+dist/
+build/
+.parcel-cache/
+
+# Agent / assistant session state
+.claude/
+.aider*
+.cursor/
+
+# Logs, env, secrets
+*.log
+npm-debug.log*
+.env
+.env.*
+*.pem
+*.key
+.netrc
