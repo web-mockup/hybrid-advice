@@ -216,6 +216,17 @@ button{font:inherit;color:inherit;}
 .hero-rule{transform:scaleX(0);transform-origin:left;}
 .js .hero-rule{transform:scaleX(0);}
 
+
+/* ---------- the full stop that becomes your firm ----------
+   The period in "not consolidation." detaches on scroll and travels to the
+   spine's "Your firm" node. Fixed positioning so it is unaffected by the
+   headline's own clip and by document flow. */
+.fs-proxy{
+  position:absolute;left:0;top:0;z-index:5;border-radius:50%;
+  background:var(--ink);opacity:0;pointer-events:none;
+  will-change:transform;
+}
+
 /* ---------- reveal base ---------- */
 .js .reveal{opacity:0;transform:translateY(22px);}
 .js #spine h2.reveal{opacity:0;transform:none;}
@@ -560,6 +571,7 @@ boot(function(){
     gsap.set('.hero-rule', {scaleX:1});
     gsap.set(slots[0], {y:'0%'});
     gsap.set(slots[1], {y:'100%'});
+    gsap.set('#you', {opacity:1});
     diagramComplete();
     return;
   }
@@ -588,7 +600,119 @@ boot(function(){
       .to('.hero-fade[data-load="5"]', {opacity:1, y:0, duration:.8}, .82)
       .to(still, {opacity:1, duration:.45}, .94)
       .to('.hero-rule', {scaleX:1, duration:1.1, ease:'power3.inOut'}, .9)
-      .call(function(){ if (!stillPaused) roll.play(); });
+      .call(function(){ if (!stillPaused) roll.play(); if (window.__fsPlace) window.__fsPlace(); });
+
+  /* ---------- the full stop becomes your firm ----------
+     "Partnership, not consolidation." is a structural claim, so the sentence
+     hands its final mark to the diagram: the period detaches, grows, turns
+     clay and lands exactly where the spine's "Your firm" node sits. Desktop
+     only - below 901px there is no sticky figure to hand off to. */
+  var fsMM = gsap.matchMedia();
+  fsMM.add('(min-width: 901px)', function(){
+    var line2 = document.querySelectorAll('.hero-anim > span')[1];
+    if (!line2) return;
+    var chars = line2.querySelectorAll('.w-in');
+    var period = chars[chars.length - 1];
+    var line1chars = document.querySelectorAll('.hero-anim > span')[0].querySelectorAll('.w-in');
+    var rest = Array.prototype.slice.call(chars, 0, chars.length - 1);
+    if (!period || period.textContent !== '.') return;
+
+    var proxy = document.createElement('div');
+    proxy.className = 'fs-proxy';
+    proxy.setAttribute('aria-hidden','true');
+    document.body.appendChild(proxy);
+
+    /* Measured, not assumed. The node sits at viewBox (108,240) of 480, so its
+       screen position is the svg's left edge plus 22.5% of its width, and -
+       because the sticky figure is centred on the viewport - exactly half the
+       viewport height. Re-measured on every refresh. */
+    function geom(){
+      var svg = document.getElementById('dia');
+      /* Measure the MASK, not the character. geom() runs at setup while the
+         load cascade still has the character parked at yPercent:118 - 140px
+         below its resting place at this size - so measuring the character
+         itself put the dot 140px low. The mask never transforms. */
+      var pr = period.parentElement.getBoundingClientRect();
+      var sr = svg.getBoundingClientRect();
+      var cs = getComputedStyle(period);
+      var fs = parseFloat(cs.fontSize);
+
+      /* Where the period's INK actually is, computed rather than guessed. The
+         span's rect is an advance box - wider than the dot and, at -0.045em
+         tracking, not centred on it. Canvas gives ink bounds relative to the
+         text origin and baseline; the baseline itself comes from the font's
+         own ascent/descent and the half-leading, because line-height here
+         (0.92) is SMALLER than ascent+descent, so the glyph overflows its line
+         box and a DOM baseline probe reports the wrong place. */
+      var ctx = (geom._c || (geom._c = document.createElement('canvas'))).getContext('2d');
+      ctx.font = cs.fontWeight + ' ' + fs + 'px ' + cs.fontFamily;
+      var m = ctx.measureText('.');
+      var fm = ctx.measureText('M');
+      var A = fm.fontBoundingBoxAscent, D = fm.fontBoundingBoxDescent;
+      var lh = parseFloat(cs.lineHeight) || fs;
+      var baselineY = pr.top + (lh - (A + D)) / 2 + A;
+
+      var inkL = -m.actualBoundingBoxLeft, inkR = m.actualBoundingBoxRight;
+      var inkT = -m.actualBoundingBoxAscent, inkB = m.actualBoundingBoxDescent;
+      var inkD = Math.max(inkR - inkL, 4);
+
+      var toR = (17 / 480) * sr.width * 2;
+      /* Document coordinates: the proxy is absolutely positioned, so it scrolls
+         with the period. The landing point is where the sticky node sits when
+         the hero trigger ends - viewport-centre at that scroll offset. */
+      var endScroll = (fs_st && fs_st.end) || 0;
+      return {
+        toR: toR,
+        startScale: inkD / toR,
+        fromX: pr.left + (inkL + inkR) / 2 - toR / 2,
+        fromY: baselineY + window.scrollY + (inkT + inkB) / 2 - toR / 2,
+        toX: sr.left + 0.225 * sr.width - toR / 2,
+        toY: endScroll + window.innerHeight / 2 - toR / 2
+      };
+    }
+    var fs_st = null;
+    var g = geom();
+    function place(){
+      g = geom();
+      gsap.set(proxy, {
+        width: g.toR, height: g.toR,
+        x: g.fromX, y: g.fromY,
+        scale: g.startScale,
+        backgroundColor: 'rgb(28,43,40)'
+      });
+    }
+    place();
+    window.__fsPlace = function(){ place(); ScrollTrigger.refresh(); };
+
+    gsap.set('#you', {opacity:0});
+
+    var fs = gsap.timeline({
+      scrollTrigger:{
+        trigger:'#hero', start:'top top', end:'bottom top+=140',
+        scrub:true, invalidateOnRefresh:true,
+        onRefresh: function(self){ fs_st = self; place(); }
+      }
+    });
+    /* Crossfade rather than a hard swap: a short overlap makes any residual
+       mismatch between glyph and circle invisible. */
+    fs.to(period, {opacity:0, ease:'none', duration:.10}, 0)
+      .to(proxy,  {opacity:1, ease:'none', duration:.10}, 0)
+      .to(line1chars, {xPercent:-4, opacity:0, ease:'none', duration:.8, stagger:{each:.004, from:'end'}}, 0)
+      .to(rest,       {xPercent:4,  opacity:0, ease:'none', duration:.8, stagger:{each:.004, from:'start'}}, 0)
+      .to('.hero-fade, .hero-still, .hero-rule', {opacity:0, y:-40, ease:'none', duration:.7}, 0)
+      .to(proxy, {
+        x: function(){ return g.toX; },
+        y: function(){ return g.toY; },
+        scale: 1,
+        backgroundColor: function(){
+          return getComputedStyle(document.documentElement).getPropertyValue('--key-yours').trim() || '#c96f4f';
+        },
+        ease: 'power2.inOut', duration: 1
+      }, 0)
+      /* hand the mark to the real SVG node at the end of the travel */
+      .set('#you', {opacity:1}, 0.985)
+      .set(proxy, {opacity:0}, 0.99);
+  });
 
   /* ---------- the spine ----------
      position:sticky, not a pin. A pin with a percentage spacer is the thing
@@ -635,6 +759,7 @@ boot(function(){
 
   mm.add('(max-width: 900px)', function(){
     /* No sticky, no scrub: the diagram arrives complete. */
+    gsap.set('#you', {opacity:1});
     diagramComplete();
   });
 
