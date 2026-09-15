@@ -50,7 +50,7 @@
   --ease:cubic-bezier(.16,1,.3,1);
 }
 *,*::before,*::after{box-sizing:border-box;}
-html{-webkit-text-size-adjust:100%;}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:96px;}
 body{
   margin:0;
   background:var(--paper);
@@ -153,7 +153,7 @@ button{font:inherit;color:inherit;}
 }
 .footer .wordmark .logo{background-color:var(--paper);}
 .nav-links{display:flex;align-items:center;gap:38px;}
-.nav-links a{font-size:15px;font-weight:500;color:var(--ink-mute);transition:color .3s var(--ease);}
+.nav-links a{font-size:15px;font-weight:500;color:var(--ink-mute);white-space:nowrap;transition:color .3s var(--ease);}
 .nav-links a:hover{color:var(--ink);}
 .nav .btn{padding:12px 22px;font-size:14px;}
 .nav-toggle{display:none;}
@@ -375,6 +375,14 @@ button{font:inherit;color:inherit;}
 }
 
 /* ---------- responsive: not broken on a phone ---------- */
+/* Six sitemap links plus the CTA hold a single row down to about 1020px, where
+   they start touching the wordmark and the CTA. Hide them before they collide
+   rather than letting them overlap or wrap. Deliberately its own query: the
+   860px block below carries hero-still and gutter calibration that must not
+   move with the nav breakpoint. */
+@media (max-width:1099px){
+  .nav-links{display:none;}
+}
 @media (max-width:1100px){
   .model-grid{grid-template-columns:1fr;gap:64px;}
   .model-figure{margin:0 auto;}
@@ -423,9 +431,11 @@ button{font:inherit;color:inherit;}
   <div class="wrap nav-inner">
     <a href="#top" class="wordmark" aria-label="Hybrid Advice"><span class="logo"></span></a>
     <nav class="nav-links">
-      <a href="#model">The model</a>
-      <a href="#keep">What you keep</a>
+      <a href="#keep">Services</a>
+      <a href="#" data-inert>Ekorn</a>
       <a href="#hubs">Hubs</a>
+      <a href="#" data-inert>Our People</a>
+      <a href="#" data-inert>Updates &amp; Insights</a>
       <a href="#contact">Contact</a>
     </nav>
     <button type="button" class="btn btn-clay">Start a conversation</button>
@@ -684,6 +694,15 @@ function boot(fn){
 boot(function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var EASE = 'power3.out';
+
+  /* Sitemap links with no section on this page. href="#" keeps them identical
+     to the working links for styling and keyboard focus; preventDefault stops
+     the jump to top. Bound before the GSAP check below on purpose - these must
+     stay inert even when GSAP fails or reduced-motion returns early. */
+  Array.prototype.forEach.call(
+    document.querySelectorAll('.nav-links a[data-inert]'),
+    function(a){ a.addEventListener('click', function(e){ e.preventDefault(); }); }
+  );
 
   if (!window.gsap) {
     /* No GSAP: strip .js from the element that carries it, or every .reveal
