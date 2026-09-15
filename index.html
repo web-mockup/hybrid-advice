@@ -53,6 +53,65 @@
   --gutter:56px;
   --ease:cubic-bezier(.16,1,.3,1);
 }
+
+/* ---------------------------------------------------------------
+   Alternate palettes. Only the variables change - every rule below
+   reads through them, including the photo grade via the -rgb channels.
+--------------------------------------------------------------- */
+:root[data-palette="orange"]{
+  --teal:#3f7d74; --teal-deep:#2d5d56; --green-deep:#16332e; --green-black:#0b211d;
+  --lime:#f2c48b; --clay:#e8722f; --paper:#faf6f0; --sand:#f4e8da;
+  --ink:#12302b; --ink-mute:#55706a; --ink-faint:#8aa09a;
+  --clay-rgb:232,114,47; --teal-rgb:63,125,116; --green-deep-rgb:22,51,46;
+  --lime-rgb:242,196,139; --paper-rgb:250,246,240;
+  --rule:rgba(18,48,43,.14);
+}
+:root[data-palette="hybrid"]{
+  --teal:#6a8d88; --teal-deep:#475b58; --green-deep:#1d3a33; --green-black:#011a15;
+  --lime:#c4f9a1; --clay:#3f6b5f; --paper:#f4f6f2; --sand:#e7ebe4;
+  --ink:#0d1f1a; --ink-mute:#556660; --ink-faint:#8a9c95;
+  --clay-rgb:63,107,95; --teal-rgb:106,141,136; --green-deep-rgb:1,26,21;
+  --lime-rgb:196,249,161; --paper-rgb:244,246,242;
+  --rule:rgba(13,31,26,.14);
+}
+
+/* ---------- palette switcher (review chrome, not page design) ----------
+   Bottom-right rather than a top corner: the nav's logo and CTA occupy both
+   top corners, and at 1280 there is only ~56px clear to the right of the CTA,
+   so a dropdown there would sit on top of the design. This mirrors the
+   concept label bottom-left, so the two read as a matched pair of tools. */
+.pal{position:fixed;right:20px;bottom:20px;z-index:210;font-size:12px;}
+.pal-btn{
+  display:flex;align-items:center;gap:9px;
+  padding:9px 13px;border-radius:999px;border:0;cursor:pointer;
+  background:rgba(19,37,34,.82);color:rgba(247,244,238,.92);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  font-weight:500;letter-spacing:.01em;
+}
+.pal-btn:hover{background:rgba(19,37,34,.95);}
+.pal-sw{width:13px;height:13px;border-radius:50%;flex:none;box-shadow:0 0 0 1px rgba(247,244,238,.35);}
+.pal-cv{transition:transform .3s var(--ease);opacity:.7}
+.pal[data-open="1"] .pal-cv{transform:rotate(180deg);}
+.pal-menu{
+  position:absolute;right:0;bottom:calc(100% + 8px);min-width:212px;
+  background:rgba(19,37,34,.94);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-radius:12px;padding:6px;
+  opacity:0;transform:translateY(6px);pointer-events:none;
+  transition:opacity .25s var(--ease),transform .25s var(--ease);
+}
+.pal[data-open="1"] .pal-menu{opacity:1;transform:none;pointer-events:auto;}
+.pal-opt{
+  display:flex;align-items:center;gap:10px;width:100%;
+  padding:9px 10px;border:0;border-radius:8px;cursor:pointer;
+  background:transparent;color:rgba(247,244,238,.86);
+  font-size:12px;font-weight:500;text-align:left;
+}
+.pal-opt:hover{background:rgba(247,244,238,.10);color:#fff;}
+.pal-opt[aria-checked="true"]{color:#fff;background:rgba(247,244,238,.07);}
+.pal-opt .tick{margin-left:auto;opacity:0;}
+.pal-opt[aria-checked="true"] .tick{opacity:.9;}
+@media (max-width:860px){ .pal{right:12px;bottom:12px;} .pal-menu{min-width:188px;} }
 *,*::before,*::after{box-sizing:border-box;}
 html{-webkit-text-size-adjust:100%;scroll-padding-top:96px;}
 body{
@@ -426,6 +485,22 @@ button{font:inherit;color:inherit;}
 </head>
 <body>
 
+<div class="pal" id="pal" data-open="0">
+  <div class="pal-menu" role="radiogroup" aria-label="Colour palette">
+    <button type="button" class="pal-opt" role="radio" data-pal="" aria-checked="true">
+      <span class="pal-sw" style="background:#c96f4f"></span>Muted teal &amp; clay<span class="tick">&#10003;</span></button>
+    <button type="button" class="pal-opt" role="radio" data-pal="orange" aria-checked="false">
+      <span class="pal-sw" style="background:#e8722f"></span>Teal &amp; orange<span class="tick">&#10003;</span></button>
+    <button type="button" class="pal-opt" role="radio" data-pal="hybrid" aria-checked="false">
+      <span class="pal-sw" style="background:#c4f9a1"></span>Hybrid brand colours<span class="tick">&#10003;</span></button>
+  </div>
+  <button type="button" class="pal-btn" id="palBtn" aria-haspopup="true" aria-expanded="false">
+    <span class="pal-sw" id="palSw" style="background:#c96f4f"></span>
+    <span id="palName">Muted teal &amp; clay</span>
+    <span class="pal-cv">&#9662;</span>
+  </button>
+</div>
+
 <div class="concept-label">
   <span class="dot"></span>
   <span><b>Design concept by Cargo.</b> Not the Hybrid Advice website.</span>
@@ -698,6 +773,53 @@ function boot(fn){
 boot(function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var EASE = 'power3.out';
+
+  /* Palette switcher. Swaps a data-attribute on <html>; every colour reads
+     through custom properties, so the whole page recolours with no reload and
+     no loss of scroll position - the point is side-by-side comparison.
+     Bound above the GSAP check so it survives a CDN failure or reduced motion. */
+  (function(){
+    var pal = document.getElementById('pal');
+    if (!pal) return;
+    var btn = document.getElementById('palBtn'),
+        sw = document.getElementById('palSw'),
+        nm = document.getElementById('palName'),
+        opts = pal.querySelectorAll('.pal-opt');
+
+    function apply(v, persist){
+      if (v) { document.documentElement.setAttribute('data-palette', v); }
+      else { document.documentElement.removeAttribute('data-palette'); }
+      for (var i=0;i<opts.length;i++){
+        var on = (opts[i].getAttribute('data-pal') || '') === (v || '');
+        opts[i].setAttribute('aria-checked', on ? 'true' : 'false');
+        if (on) {
+          nm.innerHTML = opts[i].textContent.trim().replace(/\u2713$/,'');
+          sw.style.background = opts[i].querySelector('.pal-sw').style.background;
+        }
+      }
+      if (persist) { try { localStorage.setItem('palette', v || ''); } catch(e){} }
+    }
+    function close(){ pal.setAttribute('data-open','0'); btn.setAttribute('aria-expanded','false'); }
+
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      var open = pal.getAttribute('data-open') === '1';
+      pal.setAttribute('data-open', open ? '0' : '1');
+      btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+    });
+    for (var i=0;i<opts.length;i++){
+      opts[i].addEventListener('click', function(){
+        apply(this.getAttribute('data-pal') || '', true); close();
+      });
+    }
+    document.addEventListener('click', function(e){ if (!pal.contains(e.target)) close(); });
+    document.addEventListener('keydown', function(e){ if (e.key === 'Escape') close(); });
+
+    /* ?p= wins over the stored choice, so a deep link always shows what it says */
+    var q = (location.search.match(/[?&]p=([a-z]*)/) || [])[1];
+    var stored = null; try { stored = localStorage.getItem('palette'); } catch(e){}
+    apply(q !== undefined ? q : (stored || ''), false);
+  })();
 
   /* Sitemap links with no section on this page. href="#" keeps them identical
      to the working links for styling and keyboard focus; preventDefault stops
