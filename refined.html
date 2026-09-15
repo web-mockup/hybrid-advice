@@ -194,6 +194,7 @@ button{font:inherit;color:inherit;}
 
 /* ---------- reveal base ---------- */
 .js .reveal{opacity:0;transform:translateY(22px);}
+.js tr.reveal{opacity:0;transform:translateY(14px);}
 .js .hero-anim{opacity:0;}
 .js .hero-anim > span{transform:translateY(105%);}
 .js .hero-fade{opacity:0;transform:translateY(22px);}
@@ -340,51 +341,51 @@ button{font:inherit;color:inherit;}
 
       <div class="spine-copy">
         <div class="block" id="model">
-          <span class="block-num">01</span>
-          <span class="eyebrow">The model</span>
-          <h2 class="h2">Established firms lead. Nearby firms join them.</h2>
-          <p class="body-lg">Hybrid takes a majority stake in a proven regional firm, which becomes a hub. The hub then grows by bringing nearby firms into its own operation, with Hybrid&rsquo;s capital and central teams behind every step.</p>
+          <span class="block-num reveal">01</span>
+          <span class="eyebrow reveal">The model</span>
+          <h2 class="h2 reveal">Established firms lead. Nearby firms join them.</h2>
+          <p class="body-lg reveal">Hybrid takes a majority stake in a proven regional firm, which becomes a hub. The hub then grows by bringing nearby firms into its own operation, with Hybrid&rsquo;s capital and central teams behind every step.</p>
         </div>
 
         <div class="block" id="keep">
-          <span class="block-num">02</span>
-          <span class="eyebrow">What you keep</span>
-          <h2 class="h2">Your firm stays your firm.</h2>
+          <span class="block-num reveal">02</span>
+          <span class="eyebrow reveal">What you keep</span>
+          <h2 class="h2 reveal">Your firm stays your firm.</h2>
           <div class="keep-lists">
             <div class="keep-col yours">
-              <div class="col-label"><span class="dot dot-clay"></span>Stays with you</div>
+              <div class="col-label reveal"><span class="dot dot-clay"></span>Stays with you</div>
               <ul>
-                <li>Your name and brand</li>
-                <li>Your client relationships</li>
-                <li>Your leadership and culture</li>
+                <li class="reveal">Your name and brand</li>
+                <li class="reveal">Your client relationships</li>
+                <li class="reveal">Your leadership and culture</li>
               </ul>
             </div>
             <div class="keep-col">
-              <div class="col-label"><span class="dot dot-teal"></span>Handled centrally</div>
+              <div class="col-label reveal"><span class="dot dot-teal"></span>Handled centrally</div>
               <ul>
-                <li>Acquisitions and strategy</li>
-                <li>Compliance and regulation</li>
-                <li>Central investment proposition</li>
-                <li>Accounting and treasury</li>
-                <li>Systems and operations</li>
-                <li>Adviser technology through Ekorn</li>
-                <li>Client reporting</li>
+                <li class="reveal">Acquisitions and strategy</li>
+                <li class="reveal">Compliance and regulation</li>
+                <li class="reveal">Central investment proposition</li>
+                <li class="reveal">Accounting and treasury</li>
+                <li class="reveal">Systems and operations</li>
+                <li class="reveal">Adviser technology through Ekorn</li>
+                <li class="reveal">Client reporting</li>
               </ul>
             </div>
           </div>
         </div>
 
         <div class="block" id="hubs">
-          <span class="block-num">03</span>
-          <span class="eyebrow">Hubs</span>
-          <h2 class="h2">Four regional hubs, each trading under its own name.</h2>
+          <span class="block-num reveal">03</span>
+          <span class="eyebrow reveal">Hubs</span>
+          <h2 class="h2 reveal">Four regional hubs, each trading under its own name.</h2>
           <div class="hub-scroll"><table class="hub-table">
             <thead><tr><th>Firm</th><th>Location</th><th>Led by</th><th>Partnered</th></tr></thead>
             <tbody>
-              <tr><td class="firm">Southernhay Financial Planning</td><td class="place">Exeter</td><td>Richard Wheeler and Chris Edmonds</td><td class="when">May 2024</td></tr>
-              <tr><td class="firm">D&rsquo;Arblay Wealth</td><td class="place">London</td><td>Adam Benskin and John Halley</td><td class="when">Aug 2024</td></tr>
-              <tr><td class="firm">Miraclair Wealth</td><td class="place">London &amp; Nice</td><td>Jo Leach</td><td class="when">Aug 2024</td></tr>
-              <tr><td class="firm">Aspirations Financial Planning</td><td class="place">Bristol</td><td>Andy Harris and Adam Palmer</td><td class="when">Mar 2025</td></tr>
+              <tr class="reveal"><td class="firm">Southernhay Financial Planning</td><td class="place">Exeter</td><td>Richard Wheeler and Chris Edmonds</td><td class="when">May 2024</td></tr>
+              <tr class="reveal"><td class="firm">D&rsquo;Arblay Wealth</td><td class="place">London</td><td>Adam Benskin and John Halley</td><td class="when">Aug 2024</td></tr>
+              <tr class="reveal"><td class="firm">Miraclair Wealth</td><td class="place">London &amp; Nice</td><td>Jo Leach</td><td class="when">Aug 2024</td></tr>
+              <tr class="reveal"><td class="firm">Aspirations Financial Planning</td><td class="place">Bristol</td><td>Andy Harris and Adam Palmer</td><td class="when">Mar 2025</td></tr>
             </tbody>
           </table></div>
         </div>
@@ -532,7 +533,20 @@ boot(function(){
     diagramComplete();
   });
 
-  /* ---------- reveals ---------- */
+  /* ---------- reveals ----------
+     The original page carries 22 of these. Without them the spine is one good
+     moment on an otherwise static page, so each block's copy enters on its own
+     stagger as it arrives - the texture the clip-path wipe and hero scrub used
+     to provide, which had no frame left to act on here. */
+  gsap.utils.toArray('#spine .block').forEach(function(block){
+    var items = block.querySelectorAll('.reveal');
+    if (!items.length) return;
+    gsap.to(items, {
+      opacity:1, y:0, duration:.75, ease:EASE, stagger:.06,
+      scrollTrigger:{trigger:block, start:'top 76%'}
+    });
+  });
+
   gsap.fromTo('#contactHead', {opacity:0, scale:.96},
     {opacity:1, scale:1, duration:1, ease:EASE, scrollTrigger:{trigger:'#contact', start:'top 72%'}});
   gsap.utils.toArray('#contact .reveal').forEach(function(el, i){
