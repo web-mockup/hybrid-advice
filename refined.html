@@ -192,8 +192,33 @@ button{font:inherit;color:inherit;}
 .reg-placeholder .rp-tag{display:block;margin-bottom:7px;font-size:10px;font-weight:600;
   letter-spacing:.16em;text-transform:uppercase;color:rgba(var(--lime-rgb),.75);}
 
+
+/* ---------- word masks for split-text entrances ---------- */
+.w-mask{display:inline-block;overflow:hidden;vertical-align:bottom;
+  padding-bottom:.14em;margin-bottom:-.14em;}
+.w-in{display:inline-block;will-change:transform;}
+
+/* ---------- spine progress rail ---------- */
+.spine-rail{position:absolute;left:0;top:0;bottom:0;width:1px;background:var(--rule);}
+.spine-rail i{position:absolute;left:0;top:0;width:1px;height:100%;background:var(--key-yours);
+  transform:scaleY(0);transform-origin:top;display:block;}
+.spine-grid{position:relative;}
+.spine-figure{padding-left:34px;}
+
+/* ---------- magnetic CTA ---------- */
+.btn{will-change:transform;}
+.btn-clay{position:relative;overflow:hidden;}
+.btn-clay .lbl{position:relative;z-index:1;display:inline-flex;align-items:center;gap:10px;}
+.btn-clay::before{content:"";position:absolute;inset:0;background:var(--ink);
+  transform:scaleY(0);transform-origin:bottom;transition:transform .45s var(--ease);}
+.btn-clay:hover::before{transform:scaleY(1);transform-origin:top;}
+
+.hero-rule{transform:scaleX(0);transform-origin:left;}
+.js .hero-rule{transform:scaleX(0);}
+
 /* ---------- reveal base ---------- */
 .js .reveal{opacity:0;transform:translateY(22px);}
+.js #spine h2.reveal{opacity:0;transform:none;}
 .js tr.reveal{opacity:0;transform:translateY(14px);}
 .js .hero-anim{opacity:0;}
 .js .hero-anim > span{transform:translateY(105%);}
@@ -226,6 +251,8 @@ button{font:inherit;color:inherit;}
   .js .hero-anim{opacity:1;}
   .js .hero-anim > span{transform:none;}
   .js #nav,.js .hero-still{opacity:1;}
+  .js .hero-rule{transform:none;}
+  .w-in{transform:none!important;}
 }
 </style>
 </head>
@@ -247,7 +274,7 @@ button{font:inherit;color:inherit;}
       <a href="#" data-inert>Updates &amp; Insights</a>
       <a href="#contact">Contact</a>
     </nav>
-    <button type="button" class="btn btn-clay">Start a conversation</button>
+    <button type="button" class="btn btn-clay"><span class="lbl">Start a conversation</span></button>
   </div>
 </header>
 
@@ -261,7 +288,7 @@ button{font:inherit;color:inherit;}
     </h1>
     <p class="lead hero-lead hero-fade" data-load="4">Long-term capital, acquisition support and central operations for ambitious IFA firms. Your name, your people and your client relationships stay yours.</p>
     <div class="hero-ctas hero-fade" data-load="5">
-      <button type="button" class="btn btn-clay">Start a confidential conversation <span class="arrow">&rarr;</span></button>
+      <button type="button" class="btn btn-clay"><span class="lbl">Start a confidential conversation <span class="arrow">&rarr;</span></span></button>
       <a href="#model" class="btn btn-ghost">How the model works</a>
     </div>
     <p class="hero-still">
@@ -281,6 +308,7 @@ button{font:inherit;color:inherit;}
 
   <section class="spine wrap" id="spine">
     <div class="spine-grid">
+      <div class="spine-rail" aria-hidden="true"><i id="railFill"></i></div>
 
       <div class="spine-figure">
         <svg viewBox="0 0 480 480" id="dia" role="img" aria-label="A diagram: your firm connects to Hybrid, what you keep stays with you while central functions move across, and four regional hubs each grow their own nearby firms.">
@@ -398,7 +426,7 @@ button{font:inherit;color:inherit;}
     <div class="wrap">
       <h2 class="h2" id="contactHead">Start with a conversation.</h2>
       <p class="lead reveal">A confidential first discussion about where your firm is heading.</p>
-      <button type="button" class="btn btn-clay reveal">Get in touch <span class="arrow">&rarr;</span></button>
+      <button type="button" class="btn btn-clay reveal"><span class="lbl">Get in touch <span class="arrow">&rarr;</span></span></button>
     </div>
   </section>
 
@@ -459,21 +487,68 @@ boot(function(){
   var stillPaused = new URLSearchParams(location.search).has('still');
   if (stillPaused) { var lb = document.querySelector('.concept-label'); if (lb) lb.hidden = true; }
 
+  /* Split an element into per-word masks so words can rise independently.
+     Done in JS so the markup stays a plain sentence for screen readers and
+     for anyone reading the source. */
+  function splitWords(el){
+    if (!el || el.dataset.split) return [];
+    var words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    var inners = [];
+    words.forEach(function(w, i){
+      var mask = document.createElement('span'); mask.className = 'w-mask';
+      var inner = document.createElement('span'); inner.className = 'w-in';
+      inner.textContent = w;
+      mask.appendChild(inner); el.appendChild(mask);
+      if (i < words.length - 1) el.appendChild(document.createTextNode(' '));
+      inners.push(inner);
+    });
+    el.dataset.split = '1';
+    return inners;
+  }
+
+  function splitChars(el){
+    if (!el || el.dataset.split) return [];
+    var text = el.textContent.trim();
+    el.textContent = '';
+    var inners = [];
+    text.split('').forEach(function(ch){
+      if (ch === ' ') { el.appendChild(document.createTextNode(' ')); return; }
+      var mask = document.createElement('span'); mask.className = 'w-mask';
+      var inner = document.createElement('span'); inner.className = 'w-in';
+      inner.textContent = ch;
+      mask.appendChild(inner); el.appendChild(mask);
+      inners.push(inner);
+    });
+    el.dataset.split = '1';
+    return inners;
+  }
+
+  /* Give a stroked SVG element a dash pattern equal to its own length, so it
+     can be drawn rather than merely faded in. */
+  function drawable(sel){
+    return gsap.utils.toArray(sel).map(function(l){
+      var len = l.getTotalLength();
+      gsap.set(l, {strokeDasharray:len, strokeDashoffset:len, opacity:1});
+      return l;
+    });
+  }
+
   /* diagram base state - everything past "your firm" starts hidden */
   function diagramHidden(){
     gsap.set('#core', {opacity:0, scale:.6, transformOrigin:'240px 240px'});
-    gsap.set('#linkYou', {opacity:0});
-    gsap.set('.lk', {opacity:0});
-    gsap.set('#ring', {opacity:0});
+    drawable('#linkYou'); drawable('.lk'); drawable('#ring');
     gsap.set('#movers circle', {opacity:0});
     gsap.set('#keepers circle', {opacity:0, scale:.4, transformOrigin:'center'});
     gsap.set('.d-hub', {opacity:0, scale:.5, transformOrigin:'center'});
-    gsap.set('#spokeLines line', {opacity:0});
+    drawable('#spokeLines line');
     gsap.set('#spokes circle', {opacity:0, scale:.4, transformOrigin:'center'});
   }
   function diagramComplete(){
     gsap.set('#core,#linkYou,.lk,#ring,#movers circle,#keepers circle,.d-hub,#spokeLines line,#spokes circle',
-             {opacity:1, scale:1});
+             {opacity:1, scale:1, strokeDashoffset:0});
+    gsap.set('#railFill', {scaleY:1});
+    gsap.set('.hero-rule', {scaleX:1});
     gsap.set('#movers circle', {x:132});
   }
 
@@ -482,6 +557,7 @@ boot(function(){
     gsap.set('.hero-anim', {opacity:1});
     gsap.set('.hero-anim > span', {y:0});
     gsap.set(['#nav', still], {opacity:1});
+    gsap.set('.hero-rule', {scaleX:1});
     gsap.set(slots[0], {y:'0%'});
     gsap.set(slots[1], {y:'100%'});
     diagramComplete();
@@ -489,14 +565,29 @@ boot(function(){
   }
 
   /* ---------- LOAD ---------- */
+  /* Headline cascades character by character. Word-splitting gave only three
+     beats here; per-character turns the entrance into a sweep across the full
+     width of the type, which is where the scale actually pays off. */
+  var heroWords = [];
+  gsap.utils.toArray('.hero-anim > span').forEach(function(lineInner){
+    heroWords = heroWords.concat(splitChars(lineInner));
+  });
+  gsap.set('.hero-anim', {opacity:1});
+  /* The CSS base state parks .hero-anim > span at translateY(105%) for the
+     old line-level reveal. The characters are what move now, so the line
+     wrapper has to be returned to 0 - left at 105% it sits below .line's
+     overflow:hidden and the whole headline renders invisible. */
+  gsap.set('.hero-anim > span', {yPercent:0, y:0});
+  gsap.set(heroWords, {yPercent:118});
+
   var load = gsap.timeline({defaults:{ease:EASE}});
   load.to('#nav', {opacity:1, duration:.7}, 0)
       .to('.hero-fade[data-load="1"]', {opacity:1, y:0, duration:.8}, .1)
-      .to('.hero-anim', {opacity:1, duration:.01}, .18)
-      .to('.hero-anim > span', {y:'0%', duration:1.05, stagger:.1}, .18)
-      .to('.hero-fade[data-load="4"]', {opacity:1, y:0, duration:.8}, .62)
-      .to('.hero-fade[data-load="5"]', {opacity:1, y:0, duration:.8}, .72)
-      .to(still, {opacity:1, duration:.45}, .86)
+      .to(heroWords, {yPercent:0, duration:1.0, stagger:.022}, .2)
+      .to('.hero-fade[data-load="4"]', {opacity:1, y:0, duration:.8}, .72)
+      .to('.hero-fade[data-load="5"]', {opacity:1, y:0, duration:.8}, .82)
+      .to(still, {opacity:1, duration:.45}, .94)
+      .to('.hero-rule', {scaleX:1, duration:1.1, ease:'power3.inOut'}, .9)
       .call(function(){ if (!stillPaused) roll.play(); });
 
   /* ---------- the spine ----------
@@ -509,23 +600,37 @@ boot(function(){
     diagramHidden();
     var d = gsap.timeline({
       defaults:{ease:'none'},
-      scrollTrigger:{trigger:'#spine', start:'top top+=120', end:'bottom bottom-=120', scrub:.5}
+      scrollTrigger:{trigger:'#spine', start:'top top+=120', end:'bottom bottom-=120', scrub:true}
     });
     /* 01 - Hybrid appears and connects */
+    /* 01 - Hybrid appears, the ring draws, the connection is made */
     d.to('#core', {opacity:1, scale:1, duration:1}, 0)
-     .to('#ring', {opacity:1, duration:1}, .4)
-     .to('#linkYou', {opacity:1, duration:.8}, .6)
-    /* 02 - the node splits: some hold, some travel across */
-     .to('#keepers circle', {opacity:1, scale:1, duration:.7, stagger:.12}, 1.6)
-     .to('#movers circle', {opacity:1, duration:.3, stagger:.1}, 2.0)
-     .to('#movers circle', {x:132, duration:1.5, stagger:.16, ease:'power1.inOut'}, 2.2)
-     .to('#movers circle', {opacity:0, duration:.35, stagger:.16}, 3.5)
-    /* 03 - the other hubs, then their own nearby firms */
-     .to('.lk', {opacity:1, duration:.7, stagger:.14}, 4.1)
-     .to('.d-hub', {opacity:1, scale:1, duration:.7, stagger:.14}, 4.4)
-     .to('#spokeLines line', {opacity:1, duration:.5, stagger:.045}, 5.1)
-     .to('#spokes circle', {opacity:1, scale:1, duration:.5, stagger:.045}, 5.3)
-     .to({}, {duration:.8});
+     .to('#ring', {strokeDashoffset:0, duration:1.6, ease:'power2.inOut'}, .2)
+     .to('#linkYou', {strokeDashoffset:0, duration:1}, .7)
+    /* 02 - the node splits. What stays holds; what moves travels the line and
+       lands, and the core answers each arrival with a pulse - the page's one
+       piece of cause and effect. */
+     .to('#keepers circle', {opacity:1, scale:1, duration:.7, stagger:.12}, 1.7)
+     .to('#movers circle', {opacity:1, duration:.3, stagger:.1}, 2.1)
+     .to('#movers circle', {x:132, duration:1.5, stagger:.18, ease:'power2.inOut'}, 2.3)
+     .to('#movers circle', {opacity:0, duration:.3, stagger:.18}, 3.55)
+     .to('#core', {scale:1.1, duration:.18, ease:'power2.out'}, 3.6)
+     .to('#core', {scale:1, duration:.5, ease:'power3.out'}, 3.78)
+     .to('#core', {scale:1.08, duration:.18, ease:'power2.out'}, 3.96)
+     .to('#core', {scale:1, duration:.5, ease:'power3.out'}, 4.14)
+    /* 03 - the other hubs connect, then each unfurls its own nearby firms */
+     .to('.lk', {strokeDashoffset:0, duration:.85, stagger:.16}, 4.5)
+     .to('.d-hub', {opacity:1, scale:1, duration:.6, stagger:.16}, 4.85)
+     .to('#spokeLines line', {strokeDashoffset:0, duration:.55, stagger:.05}, 5.6)
+     .to('#spokes circle', {opacity:1, scale:1, duration:.45, stagger:.05}, 5.85)
+     .to('#ring', {scale:1.02, transformOrigin:'240px 240px', duration:1.2, ease:'power2.inOut'}, 6.2)
+     .to({}, {duration:.6});
+
+    /* progress rail: the reader's position in the argument */
+    gsap.fromTo('#railFill', {scaleY:0}, {
+      scaleY:1, ease:'none',
+      scrollTrigger:{trigger:'#spine', start:'top top+=120', end:'bottom bottom-=120', scrub:true}
+    });
   });
 
   mm.add('(max-width: 900px)', function(){
@@ -539,12 +644,13 @@ boot(function(){
      stagger as it arrives - the texture the clip-path wipe and hero scrub used
      to provide, which had no frame left to act on here. */
   gsap.utils.toArray('#spine .block').forEach(function(block){
-    var items = block.querySelectorAll('.reveal');
-    if (!items.length) return;
-    gsap.to(items, {
-      opacity:1, y:0, duration:.75, ease:EASE, stagger:.06,
-      scrollTrigger:{trigger:block, start:'top 76%'}
-    });
+    var h = block.querySelector('h2');
+    var words = splitWords(h);
+    if (words.length) { gsap.set(h, {opacity:1}); gsap.set(words, {yPercent:115}); }
+    var items = block.querySelectorAll('.reveal:not(h2)');
+    var tl = gsap.timeline({scrollTrigger:{trigger:block, start:'top 76%'}});
+    if (words.length) tl.to(words, {yPercent:0, duration:.9, ease:EASE, stagger:.045}, 0);
+    if (items.length) tl.to(items, {opacity:1, y:0, duration:.75, ease:EASE, stagger:.06}, .18);
   });
 
   gsap.fromTo('#contactHead', {opacity:0, scale:.96},
@@ -575,6 +681,21 @@ boot(function(){
   }
   ScrollTrigger.create({trigger:'#hero', onToggle:function(self){ inView = self.isActive; sync(); }});
   document.addEventListener('visibilitychange', function(){ visible = !document.hidden; sync(); });
+
+  /* Magnetic CTAs. Small, pointer-only, and released on leave - the kind of
+     detail that reads as craft up close without announcing itself. */
+  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    gsap.utils.toArray('.btn').forEach(function(btn){
+      var qx = gsap.quickTo(btn, 'x', {duration:.5, ease:'power3.out'});
+      var qy = gsap.quickTo(btn, 'y', {duration:.5, ease:'power3.out'});
+      btn.addEventListener('pointermove', function(e){
+        var r = btn.getBoundingClientRect();
+        qx((e.clientX - (r.left + r.width/2)) * 0.28);
+        qy((e.clientY - (r.top + r.height/2)) * 0.42);
+      });
+      btn.addEventListener('pointerleave', function(){ qx(0); qy(0); });
+    });
+  }
 
   ScrollTrigger.refresh();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ ScrollTrigger.refresh(); });
