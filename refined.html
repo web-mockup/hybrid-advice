@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Hybrid Advice concept by Cargo — Refined</title>
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hybrid Advice concept by Cargo — Refined">
+<meta property="og:description" content="A design concept for Hybrid Advice. Not the Hybrid Advice website.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232f4441'/%3E%3Ccircle cx='16' cy='16' r='6' fill='%23c96f4f'/%3E%3C/svg%3E">
+<script>document.documentElement.className+=' js';</script>
+<style>
+@font-face{
+  font-family:'Work Sans';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('fonts/worksans-latin.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face{
+  font-family:'Work Sans';font-style:normal;font-weight:400 700;font-display:swap;
+  src:url('fonts/worksans-latin-ext.woff2') format('woff2');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+:root{
+  --teal:#6a8d88; --teal-deep:#475b58; --green-deep:#2f4441; --green-black:#132522;
+  --lime:#c4f9a1; --clay:#c96f4f; --paper:#f7f4ee; --sand:#efe8dd;
+  --ink:#1c2b28; --ink-mute:#5f6f6b; --ink-faint:#8a9794;
+  --clay-rgb:201,111,79; --teal-rgb:106,141,136; --green-deep-rgb:47,68,65;
+  --lime-rgb:196,249,161; --paper-rgb:247,244,238;
+  --key-yours:#c96f4f;
+  --rule:rgba(28,43,40,.14);
+  --rule-light:rgba(247,244,238,.18);
+  --container:1360px; --gutter:56px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+:root[data-palette="orange"]{
+  --teal:#3f7d74; --teal-deep:#2d5d56; --green-deep:#16332e; --green-black:#0b211d;
+  --lime:#f2c48b; --clay:#e8722f; --paper:#faf6f0; --sand:#f4e8da;
+  --ink:#12302b; --ink-mute:#55706a; --ink-faint:#8aa09a;
+  --clay-rgb:232,114,47; --teal-rgb:63,125,116; --green-deep-rgb:22,51,46;
+  --lime-rgb:242,196,139; --paper-rgb:250,246,240; --rule:rgba(18,48,43,.14);
+  --key-yours:#e8722f;
+}
+:root[data-palette="hybrid"]{
+  --teal:#6a8d88; --teal-deep:#475b58; --green-deep:#1d3a33; --green-black:#011a15;
+  --lime:#c4f9a1; --clay:#3f6b5f; --paper:#f4f6f2; --sand:#e7ebe4;
+  --ink:#0d1f1a; --ink-mute:#556660; --ink-faint:#8a9c95;
+  --clay-rgb:63,107,95; --teal-rgb:106,141,136; --green-deep-rgb:1,26,21;
+  --lime-rgb:196,249,161; --paper-rgb:244,246,242; --rule:rgba(13,31,26,.14);
+  /* lime itself is too pale to read on light paper; this is lime pulled
+     down to a readable olive so the key stays two distinct colours */
+  --key-yours:#6f9440;
+}
+*,*::before,*::after{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:96px;}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:'Work Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  font-size:17px;line-height:1.65;font-weight:400;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:hidden;
+}
+[hidden]{display:none!important;}
+a{color:inherit;text-decoration:none;}
+h1,h2,h3,p{margin:0;}
+button{font:inherit;color:inherit;}
+.wrap{width:100%;max-width:var(--container);margin:0 auto;padding-left:var(--gutter);padding-right:var(--gutter);}
+
+/* ---------- type ---------- */
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-mute);}
+.eyebrow.on-dark{color:var(--lime);}
+.display{font-weight:700;font-size:clamp(4.5rem,9vw,9rem);line-height:.92;letter-spacing:-.045em;}
+.h2{font-weight:700;font-size:clamp(2.1rem,3.6vw,3.2rem);line-height:1.04;letter-spacing:-.032em;}
+.pull{font-weight:600;font-size:clamp(1.5rem,2.4vw,2.1rem);line-height:1.22;letter-spacing:-.025em;}
+.lead{font-size:1.2rem;line-height:1.55;color:var(--ink-mute);}
+.body-lg{font-size:1.08rem;line-height:1.7;color:var(--ink-mute);}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border-radius:999px;
+  border:1px solid transparent;font-size:15px;font-weight:600;cursor:pointer;
+  transition:background-color .35s var(--ease),border-color .35s var(--ease),transform .35s var(--ease);}
+.btn:hover{transform:translateY(-2px);}
+.btn-clay{background:var(--clay);color:#fff;}
+.btn-ghost{border-color:var(--rule);color:var(--ink);background:transparent;}
+.btn-ghost:hover{border-color:var(--ink);}
+.btn .arrow{transition:transform .35s var(--ease);}
+.btn:hover .arrow{transform:translateX(4px);}
+
+/* ---------- concept label ---------- */
+.concept-label{position:fixed;left:20px;bottom:20px;z-index:200;pointer-events:none;
+  display:flex;align-items:center;gap:9px;padding:9px 15px;border-radius:999px;
+  background:rgba(19,37,34,.82);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  color:rgba(247,244,238,.92);font-size:11px;font-weight:500;line-height:1.35;max-width:calc(100vw - 40px);}
+.concept-label .dot{width:6px;height:6px;border-radius:50%;background:var(--clay);flex:none;}
+.concept-label b{font-weight:600;color:#fff;}
+
+/* ---------- nav ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:150;padding-top:env(safe-area-inset-top,0px);
+  background:transparent;border-bottom:1px solid transparent;
+  transition:background-color .5s var(--ease),border-color .5s var(--ease);}
+.nav.solid{background:rgba(var(--paper-rgb),.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom-color:var(--rule);}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:78px;}
+.wordmark{display:flex;align-items:center;}
+.wordmark .logo{display:block;width:150px;height:32px;background-color:var(--ink);
+  -webkit-mask:url('assets/hybrid-logo-white.png') no-repeat left center;
+  mask:url('assets/hybrid-logo-white.png') no-repeat left center;
+  -webkit-mask-size:contain;mask-size:contain;transition:background-color .5s var(--ease);}
+.footer .wordmark .logo{background-color:var(--paper);}
+.nav-links{display:flex;align-items:center;gap:38px;}
+.nav-links a{font-size:15px;font-weight:500;color:var(--ink-mute);white-space:nowrap;transition:color .3s var(--ease);}
+.nav-links a:hover{color:var(--ink);}
+.nav .btn{padding:12px 22px;font-size:14px;}
+
+/* ---------- hero ---------- */
+.hero{position:relative;padding-top:186px;padding-bottom:132px;}
+.hero .eyebrow{display:block;margin-bottom:30px;}
+.hero h1{margin-bottom:40px;}
+.line{display:block;overflow:hidden;}
+.line > span{display:block;}
+.hero-lead{max-width:56ch;margin-bottom:44px;font-size:1.28rem;}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:36px;}
+.hero-rule{height:1px;background:var(--rule);margin-top:96px;}
+
+/* still-trading roll, carried over unchanged */
+.hero-still{display:flex;align-items:baseline;gap:9px;margin:0;font-size:1.02rem;font-weight:500;color:var(--ink-mute);}
+.still-label{flex:none;}
+.still-slot{position:relative;display:inline-block;overflow:hidden;vertical-align:bottom;color:var(--ink);font-weight:600;}
+.still-sizer{visibility:hidden;display:block;white-space:nowrap;}
+.still-sizer-w{visibility:hidden;display:block;white-space:nowrap;height:0;overflow:hidden;}
+.still-name{position:absolute;left:0;top:0;white-space:nowrap;}
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;}
+
+/* ---------- the spine ---------- */
+.spine{position:relative;padding-bottom:40px;}
+.spine-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 96px;align-items:start;}
+.spine-figure{position:sticky;top:calc(50vh - 245px);height:490px;display:flex;align-items:center;justify-content:center;}
+.spine-figure svg{width:100%;max-width:470px;height:auto;overflow:visible;}
+.spine-copy{display:flex;flex-direction:column;}
+.block{min-height:86vh;display:flex;flex-direction:column;justify-content:center;padding:60px 0;}
+.block .eyebrow{display:block;margin-bottom:22px;}
+.block h2{margin-bottom:22px;}
+.block p{max-width:46ch;}
+.block-num{font-size:11px;font-weight:600;letter-spacing:.16em;color:var(--ink-faint);
+  display:block;margin-bottom:14px;font-variant-numeric:tabular-nums;}
+
+/* the key: clay = yours, teal = Hybrid */
+.keep-lists{display:flex;flex-direction:column;gap:30px;margin-top:8px;}
+.keep-col .col-label{display:flex;align-items:center;gap:11px;margin-bottom:16px;
+  font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mute);}
+.keep-col .dot{width:9px;height:9px;border-radius:50%;flex:none;}
+.dot-clay{background:var(--key-yours);}
+.dot-teal{background:var(--teal);}
+.keep-col ul{margin:0;padding:0;list-style:none;}
+.keep-col li{padding:9px 0;border-bottom:1px solid var(--rule);font-size:1.02rem;font-weight:500;}
+.keep-col li:last-child{border-bottom:0;}
+.keep-col.yours li{font-size:1.24rem;font-weight:600;letter-spacing:-.018em;}
+
+/* hub table */
+.hub-scroll{overflow-x:auto;}
+.hub-table{width:100%;min-width:430px;border-collapse:collapse;margin-top:10px;font-variant-numeric:tabular-nums;}
+.hub-table th{text-align:left;padding:0 18px 12px 0;border-bottom:1px solid var(--rule);
+  font-size:10.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);}
+.hub-table td{padding:16px 18px 16px 0;border-bottom:1px solid var(--rule);vertical-align:top;font-size:.98rem;color:var(--ink-mute);}
+.hub-table tr:last-child td{border-bottom:0;}
+.hub-table td.firm{font-size:1.06rem;font-weight:600;color:var(--ink);letter-spacing:-.014em;}
+.hub-table td.place{color:var(--key-yours);font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;}
+.hub-table td.when{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;}
+
+/* diagram parts */
+.d-core circle{fill:var(--teal);}
+.d-core text{fill:#fff;font-size:13px;font-weight:600;text-anchor:middle;}
+.d-you circle{fill:var(--key-yours);}
+.d-you text{fill:var(--ink-mute);font-size:10px;font-weight:600;letter-spacing:.14em;text-anchor:middle;text-transform:uppercase;}
+.d-hub circle{fill:var(--key-yours);}
+.d-link{stroke:var(--teal);stroke-width:1.6;fill:none;opacity:.55;}
+.d-spoke-line{stroke:var(--ink-faint);stroke-width:1;fill:none;opacity:.5;}
+.d-spoke{fill:var(--ink-faint);}
+.d-keep{fill:var(--key-yours);}
+.d-move{fill:var(--teal);}
+.d-ring{fill:none;stroke:var(--rule);stroke-width:1;}
+
+/* ---------- contact ---------- */
+.contact{background:var(--green-deep);color:var(--paper);text-align:center;padding:150px 0;}
+.contact .lead{color:rgba(247,244,238,.72);margin:0 auto 42px;max-width:44ch;}
+.contact h2{margin-bottom:24px;transform-origin:center;}
+.contact .btn{padding:18px 36px;font-size:16px;}
+
+/* ---------- footer ---------- */
+.footer{background:var(--green-black);color:rgba(247,244,238,.6);padding:66px 0 84px;}
+.footer-inner{display:flex;flex-wrap:wrap;gap:40px;justify-content:space-between;align-items:flex-start;}
+.reg-placeholder{flex:1;min-width:300px;max-width:600px;border:1px dashed rgba(247,244,238,.26);
+  border-radius:5px;padding:20px 22px;font-size:12.5px;line-height:1.6;color:rgba(247,244,238,.5);}
+.reg-placeholder .rp-tag{display:block;margin-bottom:7px;font-size:10px;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:rgba(var(--lime-rgb),.75);}
+
+/* ---------- reveal base ---------- */
+.js .reveal{opacity:0;transform:translateY(22px);}
+.js .hero-anim{opacity:0;}
+.js .hero-anim > span{transform:translateY(105%);}
+.js .hero-fade{opacity:0;transform:translateY(22px);}
+.js #nav{opacity:0;}
+.js .hero-still{opacity:0;}
+
+/* ---------- responsive ---------- */
+@media (max-width:1099px){ .nav-links{display:none;} }
+@media (max-width:900px){
+  :root{--gutter:22px;}
+  .hero{padding-top:128px;padding-bottom:80px;}
+  .hero-rule{margin-top:60px;}
+  .hero-still{font-size:12.5px;gap:7px;}
+  /* No sticky spine below 900px: the diagram simply arrives complete, inline.
+     Same decision as the original page's pin, for the same reason. */
+  .spine-grid{grid-template-columns:minmax(0,1fr);gap:0;}
+  .spine-figure{position:static;height:auto;margin:0 0 48px;top:auto;}
+  .spine-figure svg{max-width:340px;}
+  .block{min-height:0;padding:44px 0;}
+  .contact{padding:96px 0;}
+  .concept-label{font-size:10px;padding:8px 12px;left:12px;bottom:12px;}
+  .footer-inner{flex-direction:column;}
+  .reg-placeholder{min-width:0;}
+  .hub-table td.place,.hub-table td.when{white-space:normal;}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition-duration:.01ms!important;}
+  .js .reveal,.js .hero-fade{opacity:1;transform:none;}
+  .js .hero-anim{opacity:1;}
+  .js .hero-anim > span{transform:none;}
+  .js #nav,.js .hero-still{opacity:1;}
+}
+</style>
+</head>
+<body>
+
+<div class="concept-label">
+  <span class="dot"></span>
+  <span><b>Design concept by Cargo.</b> Not the Hybrid Advice website.</span>
+</div>
+
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a href="#top" class="wordmark" aria-label="Hybrid Advice"><span class="logo"></span></a>
+    <nav class="nav-links">
+      <a href="#keep">Services</a>
+      <a href="#" data-inert>Ekorn</a>
+      <a href="#hubs">Hubs</a>
+      <a href="#" data-inert>Our People</a>
+      <a href="#" data-inert>Updates &amp; Insights</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button type="button" class="btn btn-clay">Start a conversation</button>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero wrap" id="hero">
+    <span class="eyebrow hero-fade" data-load="1">For independent financial advice firms</span>
+    <h1 class="display">
+      <span class="line hero-anim"><span>Partnership,</span></span>
+      <span class="line hero-anim"><span>not consolidation.</span></span>
+    </h1>
+    <p class="lead hero-lead hero-fade" data-load="4">Long-term capital, acquisition support and central operations for ambitious IFA firms. Your name, your people and your client relationships stay yours.</p>
+    <div class="hero-ctas hero-fade" data-load="5">
+      <button type="button" class="btn btn-clay">Start a confidential conversation <span class="arrow">&rarr;</span></button>
+      <a href="#model" class="btn btn-ghost">How the model works</a>
+    </div>
+    <p class="hero-still">
+      <span class="still-label">Still trading as</span>
+      <span class="still-slot" aria-hidden="true">
+        <span class="still-sizer">Southernhay Financial Planning</span>
+        <span class="still-sizer-w">D&rsquo;Arblay Wealth</span>
+        <span class="still-sizer-w">Miraclair Wealth</span>
+        <span class="still-sizer-w">Aspirations Financial Planning</span>
+        <span class="still-name">Southernhay Financial Planning</span>
+        <span class="still-name">D&rsquo;Arblay Wealth</span>
+      </span>
+      <span class="visually-hidden">Southernhay Financial Planning, D&rsquo;Arblay Wealth, Miraclair Wealth and Aspirations Financial Planning.</span>
+    </p>
+    <div class="hero-rule"></div>
+  </section>
+
+  <section class="spine wrap" id="spine">
+    <div class="spine-grid">
+
+      <div class="spine-figure">
+        <svg viewBox="0 0 480 480" id="dia" role="img" aria-label="A diagram: your firm connects to Hybrid, what you keep stays with you while central functions move across, and four regional hubs each grow their own nearby firms.">
+          <circle class="d-ring" cx="240" cy="240" r="132" id="ring"/>
+
+          <g id="links">
+            <line class="d-link" x1="240" y1="240" x2="108" y2="240" id="linkYou"/>
+            <line class="d-link lk" x1="240" y1="240" x2="240" y2="108"/>
+            <line class="d-link lk" x1="240" y1="240" x2="372" y2="240"/>
+            <line class="d-link lk" x1="240" y1="240" x2="240" y2="372"/>
+          </g>
+
+          <g id="spokeLines">
+            <line class="d-spoke-line" x1="108" y1="240" x2="71" y2="203"/>
+            <line class="d-spoke-line" x1="108" y1="240" x2="56" y2="240"/>
+            <line class="d-spoke-line" x1="108" y1="240" x2="71" y2="277"/>
+            <line class="d-spoke-line" x1="240" y1="108" x2="203" y2="71"/>
+            <line class="d-spoke-line" x1="240" y1="108" x2="240" y2="56"/>
+            <line class="d-spoke-line" x1="240" y1="108" x2="277" y2="71"/>
+            <line class="d-spoke-line" x1="372" y1="240" x2="409" y2="203"/>
+            <line class="d-spoke-line" x1="372" y1="240" x2="424" y2="240"/>
+            <line class="d-spoke-line" x1="372" y1="240" x2="409" y2="277"/>
+            <line class="d-spoke-line" x1="240" y1="372" x2="203" y2="409"/>
+            <line class="d-spoke-line" x1="240" y1="372" x2="240" y2="424"/>
+            <line class="d-spoke-line" x1="240" y1="372" x2="277" y2="409"/>
+          </g>
+          <g id="spokes">
+            <circle class="d-spoke" cx="71" cy="203" r="5.5"/><circle class="d-spoke" cx="56" cy="240" r="5.5"/><circle class="d-spoke" cx="71" cy="277" r="5.5"/>
+            <circle class="d-spoke" cx="203" cy="71" r="5.5"/><circle class="d-spoke" cx="240" cy="56" r="5.5"/><circle class="d-spoke" cx="277" cy="71" r="5.5"/>
+            <circle class="d-spoke" cx="409" cy="203" r="5.5"/><circle class="d-spoke" cx="424" cy="240" r="5.5"/><circle class="d-spoke" cx="409" cy="277" r="5.5"/>
+            <circle class="d-spoke" cx="203" cy="409" r="5.5"/><circle class="d-spoke" cx="240" cy="424" r="5.5"/><circle class="d-spoke" cx="277" cy="409" r="5.5"/>
+          </g>
+
+          <!-- what moves across: teal, travels you -> centre -->
+          <g id="movers">
+            <circle class="d-move" cx="108" cy="240" r="4.5"/>
+            <circle class="d-move" cx="108" cy="240" r="4.5"/>
+            <circle class="d-move" cx="108" cy="240" r="4.5"/>
+            <circle class="d-move" cx="108" cy="240" r="4.5"/>
+          </g>
+          <!-- what stays: clay, holds at your node -->
+          <g id="keepers">
+            <circle class="d-keep" cx="82" cy="212" r="4.5"/>
+            <circle class="d-keep" cx="74" cy="240" r="4.5"/>
+            <circle class="d-keep" cx="82" cy="268" r="4.5"/>
+          </g>
+
+          <g id="hubs">
+            <g class="d-hub"><circle cx="240" cy="108" r="13"/></g>
+            <g class="d-hub"><circle cx="372" cy="240" r="13"/></g>
+            <g class="d-hub"><circle cx="240" cy="372" r="13"/></g>
+          </g>
+
+          <g class="d-core" id="core"><circle cx="240" cy="240" r="30"/><text x="240" y="245">Hybrid</text></g>
+          <g class="d-you" id="you"><circle cx="108" cy="240" r="17"/><text x="108" y="300">Your firm</text></g>
+        </svg>
+      </div>
+
+      <div class="spine-copy">
+        <div class="block" id="model">
+          <span class="block-num">01</span>
+          <span class="eyebrow">The model</span>
+          <h2 class="h2">Established firms lead. Nearby firms join them.</h2>
+          <p class="body-lg">Hybrid takes a majority stake in a proven regional firm, which becomes a hub. The hub then grows by bringing nearby firms into its own operation, with Hybrid&rsquo;s capital and central teams behind every step.</p>
+        </div>
+
+        <div class="block" id="keep">
+          <span class="block-num">02</span>
+          <span class="eyebrow">What you keep</span>
+          <h2 class="h2">Your firm stays your firm.</h2>
+          <div class="keep-lists">
+            <div class="keep-col yours">
+              <div class="col-label"><span class="dot dot-clay"></span>Stays with you</div>
+              <ul>
+                <li>Your name and brand</li>
+                <li>Your client relationships</li>
+                <li>Your leadership and culture</li>
+              </ul>
+            </div>
+            <div class="keep-col">
+              <div class="col-label"><span class="dot dot-teal"></span>Handled centrally</div>
+              <ul>
+                <li>Acquisitions and strategy</li>
+                <li>Compliance and regulation</li>
+                <li>Central investment proposition</li>
+                <li>Accounting and treasury</li>
+                <li>Systems and operations</li>
+                <li>Adviser technology through Ekorn</li>
+                <li>Client reporting</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="block" id="hubs">
+          <span class="block-num">03</span>
+          <span class="eyebrow">Hubs</span>
+          <h2 class="h2">Four regional hubs, each trading under its own name.</h2>
+          <div class="hub-scroll"><table class="hub-table">
+            <thead><tr><th>Firm</th><th>Location</th><th>Led by</th><th>Partnered</th></tr></thead>
+            <tbody>
+              <tr><td class="firm">Southernhay Financial Planning</td><td class="place">Exeter</td><td>Richard Wheeler and Chris Edmonds</td><td class="when">May 2024</td></tr>
+              <tr><td class="firm">D&rsquo;Arblay Wealth</td><td class="place">London</td><td>Adam Benskin and John Halley</td><td class="when">Aug 2024</td></tr>
+              <tr><td class="firm">Miraclair Wealth</td><td class="place">London &amp; Nice</td><td>Jo Leach</td><td class="when">Aug 2024</td></tr>
+              <tr><td class="firm">Aspirations Financial Planning</td><td class="place">Bristol</td><td>Andy Harris and Adam Palmer</td><td class="when">Mar 2025</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <h2 class="h2" id="contactHead">Start with a conversation.</h2>
+      <p class="lead reveal">A confidential first discussion about where your firm is heading.</p>
+      <button type="button" class="btn btn-clay reveal">Get in touch <span class="arrow">&rarr;</span></button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <a href="#top" class="wordmark" aria-label="Hybrid Advice"><span class="logo"></span></a>
+    <div class="reg-placeholder">
+      <span class="rp-tag">Regulatory footer — placeholder</span>
+      Company registration, registered office, FCA authorisation and trading-name disclosures to be supplied by Hybrid Advice and set in this block.
+    </div>
+  </div>
+</footer>
+
+<script src="vendor/gsap.min.js"></script>
+<script src="vendor/ScrollTrigger.min.js"></script>
+<script>
+window.__DESIGN__ = 'refined';
+</script>
+<script src="switcher.js"></script>
+<script>
+function boot(fn){
+  var started = false;
+  function go(){ if (!started) { started = true; fn(); } }
+  function afterDom(){
+    if (document.fonts && document.fonts.ready) {
+      Promise.race([document.fonts.ready, new Promise(function(r){ setTimeout(r, 1000); })]).then(go);
+    } else { go(); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', afterDom);
+  else afterDom();
+}
+
+boot(function(){
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var EASE = 'power3.out';
+
+  Array.prototype.forEach.call(document.querySelectorAll('.nav-links a[data-inert]'),
+    function(a){ a.addEventListener('click', function(e){ e.preventDefault(); }); });
+
+  if (!window.gsap) {
+    document.documentElement.classList.remove('js');
+    document.body.classList.remove('js');
+    return;
+  }
+  gsap.registerPlugin(ScrollTrigger);
+
+  ScrollTrigger.create({
+    trigger: '#spine', start: 'top top+=78',
+    onEnter: function(){ document.getElementById('nav').classList.add('solid'); },
+    onLeaveBack: function(){ document.getElementById('nav').classList.remove('solid'); }
+  });
+
+  var NAMES = ['Southernhay Financial Planning','D’Arblay Wealth','Miraclair Wealth','Aspirations Financial Planning'];
+  var slots = gsap.utils.toArray('.still-name');
+  var still = document.querySelector('.hero-still');
+  var stillPaused = new URLSearchParams(location.search).has('still');
+  if (stillPaused) { var lb = document.querySelector('.concept-label'); if (lb) lb.hidden = true; }
+
+  /* diagram base state - everything past "your firm" starts hidden */
+  function diagramHidden(){
+    gsap.set('#core', {opacity:0, scale:.6, transformOrigin:'240px 240px'});
+    gsap.set('#linkYou', {opacity:0});
+    gsap.set('.lk', {opacity:0});
+    gsap.set('#ring', {opacity:0});
+    gsap.set('#movers circle', {opacity:0});
+    gsap.set('#keepers circle', {opacity:0, scale:.4, transformOrigin:'center'});
+    gsap.set('.d-hub', {opacity:0, scale:.5, transformOrigin:'center'});
+    gsap.set('#spokeLines line', {opacity:0});
+    gsap.set('#spokes circle', {opacity:0, scale:.4, transformOrigin:'center'});
+  }
+  function diagramComplete(){
+    gsap.set('#core,#linkYou,.lk,#ring,#movers circle,#keepers circle,.d-hub,#spokeLines line,#spokes circle',
+             {opacity:1, scale:1});
+    gsap.set('#movers circle', {x:132});
+  }
+
+  if (reduced) {
+    gsap.set('.reveal, .hero-fade', {opacity:1, y:0});
+    gsap.set('.hero-anim', {opacity:1});
+    gsap.set('.hero-anim > span', {y:0});
+    gsap.set(['#nav', still], {opacity:1});
+    gsap.set(slots[0], {y:'0%'});
+    gsap.set(slots[1], {y:'100%'});
+    diagramComplete();
+    return;
+  }
+
+  /* ---------- LOAD ---------- */
+  var load = gsap.timeline({defaults:{ease:EASE}});
+  load.to('#nav', {opacity:1, duration:.7}, 0)
+      .to('.hero-fade[data-load="1"]', {opacity:1, y:0, duration:.8}, .1)
+      .to('.hero-anim', {opacity:1, duration:.01}, .18)
+      .to('.hero-anim > span', {y:'0%', duration:1.05, stagger:.1}, .18)
+      .to('.hero-fade[data-load="4"]', {opacity:1, y:0, duration:.8}, .62)
+      .to('.hero-fade[data-load="5"]', {opacity:1, y:0, duration:.8}, .72)
+      .to(still, {opacity:1, duration:.45}, .86)
+      .call(function(){ if (!stillPaused) roll.play(); });
+
+  /* ---------- the spine ----------
+     position:sticky, not a pin. A pin with a percentage spacer is the thing
+     that breaks on phones; sticky needs no spacer and no refresh maths. The
+     ScrollTrigger below only drives the timeline - it moves nothing itself. */
+  var mm = gsap.matchMedia();
+
+  mm.add('(min-width: 901px)', function(){
+    diagramHidden();
+    var d = gsap.timeline({
+      defaults:{ease:'none'},
+      scrollTrigger:{trigger:'#spine', start:'top top+=120', end:'bottom bottom-=120', scrub:.5}
+    });
+    /* 01 - Hybrid appears and connects */
+    d.to('#core', {opacity:1, scale:1, duration:1}, 0)
+     .to('#ring', {opacity:1, duration:1}, .4)
+     .to('#linkYou', {opacity:1, duration:.8}, .6)
+    /* 02 - the node splits: some hold, some travel across */
+     .to('#keepers circle', {opacity:1, scale:1, duration:.7, stagger:.12}, 1.6)
+     .to('#movers circle', {opacity:1, duration:.3, stagger:.1}, 2.0)
+     .to('#movers circle', {x:132, duration:1.5, stagger:.16, ease:'power1.inOut'}, 2.2)
+     .to('#movers circle', {opacity:0, duration:.35, stagger:.16}, 3.5)
+    /* 03 - the other hubs, then their own nearby firms */
+     .to('.lk', {opacity:1, duration:.7, stagger:.14}, 4.1)
+     .to('.d-hub', {opacity:1, scale:1, duration:.7, stagger:.14}, 4.4)
+     .to('#spokeLines line', {opacity:1, duration:.5, stagger:.045}, 5.1)
+     .to('#spokes circle', {opacity:1, scale:1, duration:.5, stagger:.045}, 5.3)
+     .to({}, {duration:.8});
+  });
+
+  mm.add('(max-width: 900px)', function(){
+    /* No sticky, no scrub: the diagram arrives complete. */
+    diagramComplete();
+  });
+
+  /* ---------- reveals ---------- */
+  gsap.fromTo('#contactHead', {opacity:0, scale:.96},
+    {opacity:1, scale:1, duration:1, ease:EASE, scrollTrigger:{trigger:'#contact', start:'top 72%'}});
+  gsap.utils.toArray('#contact .reveal').forEach(function(el, i){
+    gsap.to(el, {opacity:1, y:0, duration:.8, ease:EASE, delay:i*.08,
+      scrollTrigger:{trigger:'#contact', start:'top 72%'}});
+  });
+
+  /* ---------- the roll, carried over unchanged ---------- */
+  gsap.set(slots[0], {y:'0%'});
+  gsap.set(slots[1], {y:'100%'});
+  var roll = gsap.timeline({repeat:-1, paused:true});
+  for (var i = 0; i < NAMES.length; i++) {
+    (function(i){
+      var outgoing = slots[i % 2], incoming = slots[(i + 1) % 2];
+      var next = NAMES[(i + 1) % NAMES.length], at = i * 3.1;
+      roll.call(function(){ incoming.textContent = next; }, null, at + 2.4)
+          .set(incoming, {y:'100%'}, at + 2.4)
+          .to(outgoing, {y:'-100%', duration:.60, ease:'power2.inOut'}, at + 2.5)
+          .to(incoming, {y:'0%', duration:.60, ease:'power2.inOut'}, at + 2.5);
+    })(i);
+  }
+  var inView = true, visible = !document.hidden;
+  function sync(){
+    if (stillPaused) { roll.pause(); return; }
+    if (inView && visible) roll.play(); else roll.pause();
+  }
+  ScrollTrigger.create({trigger:'#hero', onToggle:function(self){ inView = self.isActive; sync(); }});
+  document.addEventListener('visibilitychange', function(){ visible = !document.hidden; sync(); });
+
+  ScrollTrigger.refresh();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ ScrollTrigger.refresh(); });
+});
+</script>
+</body>
+</html>
