@@ -1,0 +1,9 @@
+# Verification captures and deck exports live outside this repo (Cargo/refs,
+# Cargo/deliverables). These entries are belt-and-braces in case anything
+# lands inside the repo folder by accident.
+refs/
+.playwright-mcp/
+deliverables/
+*.png
+# ...except the Open Graph image, which Pages has to serve.
+!og.png
