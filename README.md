@@ -9,7 +9,8 @@ with `noindex, nofollow`.
   untrusted conference wifi)
 - Work Sans variable, self-hosted in `fonts/` (OFL)
 - No third-party requests at runtime
-- All imagery is a labelled placeholder; no real photography or logos
+- All photography is a labelled stand-in, not Hybrid's (see Imagery below);
+  the wordmark is Hybrid's own logo
 - Contact CTA is intentionally non-functional
 
 Local preview:

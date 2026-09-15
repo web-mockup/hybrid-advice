@@ -217,9 +217,43 @@ button{font:inherit;color:inherit;}
 .line{display:block;overflow:hidden;}
 .line > span{display:block;}
 .hero-lead{max-width:60ch;margin-bottom:44px;font-size:1.25rem;}
-.hero-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:96px;}
+/* CTA-bottom to frame-top is a 96px gap. The still line now lives inside it,
+   so the 96px is split 36 / line / 36 rather than added to. Changing either
+   margin moves the frame down, which decalibrates the load wipe's start inset
+   (see .hero-clip) - re-measure if you touch these. */
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:36px;}
+
+/* ---------- hero still line ("Still trading as <hub>") ---------- */
+.hero-still{
+  display:flex;align-items:baseline;gap:9px;margin:0 0 36px;
+  font-size:1.02rem;font-weight:500;color:var(--ink-mute);
+}
+.still-label{flex:none;}
+.still-slot{
+  position:relative;display:inline-block;overflow:hidden;vertical-align:bottom;
+  color:var(--ink);font-weight:600;
+}
+/* The sizers give the mask its box. .still-slot is inline-block, so it takes the
+   widest child - which is why EVERY name is listed, not just the one that looks
+   longest. "Aspirations Financial Planning" is 30 characters to Southernhay's
+   29 but renders 11px narrower (242 vs 253), and picking by character count
+   silently clipped the widest name. Add a name here if you add one above. */
+.still-sizer{visibility:hidden;display:block;white-space:nowrap;}
+.still-sizer-w{visibility:hidden;display:block;white-space:nowrap;height:0;overflow:hidden;}
+.still-name{position:absolute;left:0;top:0;white-space:nowrap;}
+
+/* ---------- hero frame: three layers, one job each ---------- */
+/* .hero-frame reserves the box so nothing shifts during load.
+   .hero-clip carries the load clip-path and NOTHING else.
+   #heroMedia carries the scroll-scrubbed transform and NOTHING else.
+   .hero-clip must stay absolutely positioned. Its only child is absolute, so as
+   a plain block div it computes to zero height - and inset() percentages resolve
+   against the element's own border box, so the clip becomes a degenerate rect
+   and the whole frame disappears with no error. Do not "simplify" this. */
+.hero-frame{position:relative;width:100%;aspect-ratio:16/9;}
+.hero-clip{position:absolute;inset:0;will-change:clip-path;}
 .hero-media{
-  position:relative;width:100%;aspect-ratio:16/9;border-radius:8px;
+  position:absolute;inset:0;border-radius:8px;
   transform-origin:center top;will-change:transform;
 }
 .hero-media .ph-note{font-size:14px;max-width:34ch;}
@@ -326,6 +360,19 @@ button{font:inherit;color:inherit;}
 .js .hero-anim{opacity:0;}
 .js .hero-anim > span{transform:translateY(105%);}
 .js .hero-fade{opacity:0;transform:translateY(24px);}
+/* 32% is derived, not chosen: at 1440x900 only the frame's top ~31% is above
+   the fold at load, so a wipe starting at 100% would spend a third of its
+   travel where nobody can see it. Starting level with the fold puts the whole
+   sweep on screen. Re-derive if the hero copy stack changes height. */
+.js .hero-clip{clip-path:inset(32% 0% 0% 0% round 8px);}
+.js #nav{opacity:0;}
+.js .hero-still{opacity:0;}
+
+/* Screen-reader-only: carries the real sentence while the visual slot rolls. */
+.visually-hidden{
+  position:absolute;width:1px;height:1px;margin:-1px;padding:0;
+  overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0;
+}
 
 /* ---------- responsive: not broken on a phone ---------- */
 @media (max-width:1100px){
@@ -340,8 +387,13 @@ button{font:inherit;color:inherit;}
   .wordmark .logo{width:118px;height:25px;}
   .hero{padding-top:128px;}
   .hero h1{max-width:100%;}
-  .hero-ctas{margin-bottom:60px;}
-  .hero-media{aspect-ratio:4/3;}
+  /* Same split as desktop, against a 60px gap rather than 96. The still line
+     stays on ONE line here - at 12.5px the longest name ("Still trading as
+     Aspirations Financial Planning") fits the 346px content width at 390,
+     so the masked slot never has to wrap out of its own box. */
+  .hero-ctas{margin-bottom:21px;}
+  .hero-still{margin-bottom:21px;font-size:12.5px;gap:7px;}
+  .hero-frame{aspect-ratio:4/3;}
   .section{padding-top:104px;padding-bottom:104px;}
   .keep-grid,.hubs-grid{grid-template-columns:1fr;gap:64px;margin-top:56px;}
   .keep-primary li{font-size:1.5rem;}
@@ -355,6 +407,8 @@ button{font:inherit;color:inherit;}
   .js .reveal,.js .hero-fade{opacity:1;transform:none;}
   .js .hero-anim{opacity:1;}
   .js .hero-anim > span{transform:none;}
+  .js .hero-clip{clip-path:none;}
+  .js #nav,.js .hero-still{opacity:1;}
 }
 </style>
 </head>
@@ -383,24 +437,42 @@ button{font:inherit;color:inherit;}
   <!-- 1. HERO -->
   <section class="hero wrap" id="hero">
     <div class="hero-copy">
-      <span class="eyebrow hero-fade" data-load="1">For independent financial advice firms</span>
+      <span class="eyebrow hero-fade">For independent financial advice firms</span>
       <h1 class="display">
-        <span class="line hero-anim" data-load="2"><span>Partnership,</span></span>
-        <span class="line hero-anim" data-load="3"><span>not consolidation.</span></span>
+        <span class="line hero-anim"><span>Partnership,</span></span>
+        <span class="line hero-anim"><span>not consolidation.</span></span>
       </h1>
-      <p class="lead hero-lead hero-fade" data-load="4">Long-term capital, acquisition support and central operations for ambitious IFA firms. Your name, your people and your client relationships stay yours.</p>
-      <div class="hero-ctas hero-fade" data-load="5">
+      <p class="lead hero-lead hero-fade">Long-term capital, acquisition support and central operations for ambitious IFA firms. Your name, your people and your client relationships stay yours.</p>
+      <div class="hero-ctas hero-fade">
         <button type="button" class="btn btn-clay">Start a confidential conversation <span class="arrow">&rarr;</span></button>
         <a href="#model" class="btn btn-ghost">How the model works</a>
       </div>
+      <!-- The rolling slot is decorative duplication; the sentence a screen
+           reader gets is the static one below it. -->
+      <p class="hero-still">
+        <span class="still-label">Still trading as</span>
+        <span class="still-slot" aria-hidden="true">
+          <span class="still-sizer">Southernhay Financial Planning</span>
+          <span class="still-sizer-w">D&rsquo;Arblay Wealth</span>
+          <span class="still-sizer-w">Miraclair Wealth</span>
+          <span class="still-sizer-w">Aspirations Financial Planning</span>
+          <span class="still-name">Southernhay Financial Planning</span>
+          <span class="still-name">D&rsquo;Arblay Wealth</span>
+        </span>
+        <span class="visually-hidden">Southernhay Financial Planning, D&rsquo;Arblay Wealth, Miraclair Wealth and Aspirations Financial Planning.</span>
+      </p>
     </div>
-    <div class="ph hero-media hero-fade" data-load="6" id="heroMedia">
-      <img class="ph-img" src="assets/hero-principal.jpg" alt="" style="object-position:center 30%">
-      <div class="ticks"><span></span><span></span><span></span><span></span></div>
-      <div class="ph-body">
-        <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
-        <span class="ph-note">Documentary portrait — a partner firm principal in their own office. Stand-in frame; final photography to be commissioned.</span>
+    <div class="hero-frame">
+     <div class="hero-clip">
+      <div class="ph hero-media" id="heroMedia">
+        <img class="ph-img" src="assets/hero-principal.jpg" alt="" style="object-position:center 30%">
+        <div class="ticks"><span></span><span></span><span></span><span></span></div>
+        <div class="ph-body">
+          <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
+          <span class="ph-note">Stand-in frame. The commission: a documentary portrait of a partner firm principal, shot on location in their own office.</span>
+        </div>
       </div>
+     </div>
     </div>
   </section>
 
@@ -505,7 +577,7 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
-            <img class="ph-img" src="assets/hub-southernhay.jpg" alt="" style="object-position:center 40%">
+            <img class="ph-img" loading="lazy" decoding="async" src="assets/hub-southernhay.jpg" alt="" style="object-position:center 40%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
               <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
@@ -519,7 +591,7 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
-            <img class="ph-img" src="assets/hub-darblay.jpg" alt="" style="object-position:center 45%">
+            <img class="ph-img" loading="lazy" decoding="async" src="assets/hub-darblay.jpg" alt="" style="object-position:center 45%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
               <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
@@ -533,7 +605,7 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
-            <img class="ph-img" src="assets/hub-miraclair.jpg" alt="" style="object-position:center 38%">
+            <img class="ph-img" loading="lazy" decoding="async" src="assets/hub-miraclair.jpg" alt="" style="object-position:center 38%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
               <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
@@ -547,7 +619,7 @@ button{font:inherit;color:inherit;}
 
         <article class="hub-card reveal">
           <div class="ph">
-            <img class="ph-img" src="assets/hub-aspirations.jpg" alt="" style="object-position:center 42%">
+            <img class="ph-img" loading="lazy" decoding="async" src="assets/hub-aspirations.jpg" alt="" style="object-position:center 42%">
             <div class="ticks"><span></span><span></span><span></span><span></span></div>
             <div class="ph-body">
               <span class="ph-tag"><span class="sq"></span>Indicative imagery</span>
@@ -587,7 +659,29 @@ button{font:inherit;color:inherit;}
 <script src="vendor/gsap.min.js"></script>
 <script src="vendor/ScrollTrigger.min.js"></script>
 <script>
-window.addEventListener('load', function(){
+/* Boot on DOMContentLoaded + fonts, NOT window 'load'. 'load' waits on every
+   image, including ~2.2MB of below-fold hub JPEGs - gating a hero animation on
+   assets nobody can see. Fonts are raced against a 1s timeout so a font failure
+   delays the hero rather than leaving it at opacity:0 forever. */
+function boot(fn){
+  var started = false;
+  function go(){ if (!started) { started = true; fn(); } }
+  function afterDom(){
+    if (document.fonts && document.fonts.ready) {
+      var timeout = new Promise(function(res){ setTimeout(res, 1000); });
+      Promise.race([document.fonts.ready, timeout]).then(go);
+    } else {
+      go();
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', afterDom);
+  } else {
+    afterDom();
+  }
+}
+
+boot(function(){
   var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var EASE = 'power3.out';
 
@@ -609,21 +703,90 @@ window.addEventListener('load', function(){
     onLeaveBack: function(){ document.getElementById('nav').classList.remove('solid'); }
   });
 
+  var NAMES = ['Southernhay Financial Planning','D’Arblay Wealth',
+               'Miraclair Wealth','Aspirations Financial Planning'];
+  var slots = gsap.utils.toArray('.still-name');
+  var still = document.querySelector('.hero-still');
+  /* ?still=1 - deck capture mode. Roll held on the first hub name and the
+     concept label hidden, so the 3840x2160 export is deterministic rather than
+     depending on catching a 2.5s window. The label stays on the live page. */
+  var stillPaused = new URLSearchParams(location.search).has('still');
+  if (stillPaused) {
+    var label = document.querySelector('.concept-label');
+    if (label) label.hidden = true;
+  }
+
   if (reduced) {
     gsap.set('.reveal, .hero-fade', {opacity:1, y:0});
     gsap.set('.hero-anim', {opacity:1});
     gsap.set('.hero-anim > span', {y:0});
+    gsap.set('.hero-clip', {clipPath:'none', willChange:'auto'});
+    gsap.set(['#nav', still], {opacity:1});
+    /* First name held statically. The roll is never built. */
+    gsap.set(slots[0], {y:'0%'});
+    gsap.set(slots[1], {y:'100%'});
     return;
   }
 
-  /* ---------- LOAD ---------- */
+  /* ---------- LOAD ----------
+     Order follows the iwcglobal.net reference measured in refs/: the headline
+     owns the entrance alone, then a ~250ms beat, then the supporting copy.
+     The frame wipe sits IN that beat rather than running under the headline -
+     in the reference the background was static precisely so the type owned the
+     moment, and two large moves at once would lose that. */
   var load = gsap.timeline({defaults:{ease:EASE}});
-  load.to('.hero-fade[data-load="1"]', {opacity:1, y:0, duration:.8}, 0)
-      .to('.hero-anim', {opacity:1, duration:.01}, .08)
-      .to('.hero-anim > span', {y:'0%', duration:1, stagger:.09}, .08)
-      .to('.hero-fade[data-load="4"]', {opacity:1, y:0, duration:.8}, .34)
-      .to('.hero-fade[data-load="5"]', {opacity:1, y:0, duration:.8}, .44)
-      .to('.hero-fade[data-load="6"]', {opacity:1, y:0, duration:.9}, .52);
+  load.to('.hero .eyebrow', {opacity:1, y:0, duration:.50}, .05)
+      .to('.hero-anim', {opacity:1, duration:.01}, .15)
+      .to('.hero-anim > span', {y:'0%', duration:.50, stagger:.10}, .15)
+      .fromTo('.hero-clip',
+              {clipPath:'inset(32% 0% 0% 0% round 8px)'},
+              {clipPath:'inset(0% 0% 0% 0% round 8px)', duration:.70}, .80)
+      .to('.hero-lead', {opacity:1, y:0, duration:.50}, 1.00)
+      .to('.hero-ctas', {opacity:1, y:0, duration:.50}, 1.08)
+      .to(still, {opacity:1, duration:.45}, 1.16)
+      .to('#nav', {opacity:1, duration:.45}, 1.20);
+
+  load.eventCallback('onComplete', function(){
+    /* Hand the frame back to the scroll scrub cleanly: a live clip-path at
+       round 8px would fight the scrub's borderRadius 8 -> 40. */
+    gsap.set('.hero-clip', {clipPath:'none', willChange:'auto'});
+    if (!stillPaused) roll.play();
+  });
+
+  /* ---------- HUB NAME ROLL ---------- */
+  gsap.set(slots[0], {y:'0%'});
+  gsap.set(slots[1], {y:'100%'});
+
+  var roll = gsap.timeline({repeat:-1, paused:true});
+  for (var i = 0; i < NAMES.length; i++) {
+    (function(i){
+      var outgoing = slots[i % 2];
+      var incoming = slots[(i + 1) % 2];
+      var next = NAMES[(i + 1) % NAMES.length];
+      var at = i * 3.1;
+      roll.call(function(){ incoming.textContent = next; }, null, at + 2.4)
+          .set(incoming, {y:'100%'}, at + 2.4)
+          .to(outgoing, {y:'-100%', duration:.60, ease:'power2.inOut'}, at + 2.5)
+          .to(incoming, {y:'0%',   duration:.60, ease:'power2.inOut'}, at + 2.5);
+    })(i);
+  }
+
+  /* Pause off-screen and in background tabs. One predicate, not two handlers,
+     so the conditions cannot disagree. onToggle (not onEnter/onLeave) because a
+     refresh with restored scroll never fires onLeave - inView would stay true
+     and the roll would run unseen. */
+  var inView = true, visible = !document.hidden;
+  function sync(){
+    if (stillPaused) { roll.pause(); return; }
+    if (inView && visible) roll.play(); else roll.pause();
+  }
+  ScrollTrigger.create({
+    trigger: '#hero',
+    onToggle: function(self){ inView = self.isActive; sync(); }
+  });
+  document.addEventListener('visibilitychange', function(){
+    visible = !document.hidden; sync();
+  });
 
   /* ---------- diagram base (hidden) state ---------- */
   gsap.set('.n-core', {opacity:0, scale:.6, transformOrigin:'300px 300px'});
@@ -645,7 +808,7 @@ window.addEventListener('load', function(){
     /* ---------- HERO SCRUB ---------- */
     gsap.to('#heroMedia', {
       scale:.92, borderRadius:40, ease:'none',
-      scrollTrigger:{trigger:'#hero', start:'top top', end:'bottom top', scrub:true}
+      scrollTrigger:{id:'heroScrub', trigger:'#hero', start:'top top', end:'bottom top', scrub:true}
     });
     gsap.to('.hero-copy', {
       opacity:0, y:-60, ease:'none',
