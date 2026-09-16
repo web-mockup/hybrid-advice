@@ -36,6 +36,9 @@
   --green-black:#132522;
   --lime:#c4f9a1;
   --clay:#c96f4f;
+  /* the accent as it reads in type on paper; only the bright palette
+     needs it to differ from --clay */
+  --accent-text:var(--clay);
   /* channel copies of the above, for rgba() in the photo grade */
   --clay-rgb:201,111,79;
   --teal-rgb:106,141,136;
@@ -65,6 +68,7 @@
   --clay-rgb:51,51,51; --teal-rgb:0,204,204; --green-deep-rgb:15,57,54;
   --lime-rgb:168,216,214; --paper-rgb:243,247,246;
   --rule:rgba(15,43,41,.14);
+  --accent-text:#008080;
 }
 /* #333333 does the accent's work on paper, but it sinks into the dark grounds,
    so the two marks that sit on them take the brand teal instead - which is
@@ -348,7 +352,7 @@ button{font:inherit;color:inherit;}
   font-size:1.9rem;font-weight:600;line-height:1.18;letter-spacing:-.025em;
 }
 .keep-primary li:last-child{border-bottom:0;margin-bottom:0;}
-.keep-primary li em{color:var(--clay);font-style:normal;}
+.keep-primary li em{color:var(--accent-text);font-style:normal;}
 .keep-primary ul{margin:0;padding:0;}
 .keep-secondary ul{margin:0;padding:0;}
 .keep-secondary li{
@@ -365,7 +369,7 @@ button{font:inherit;color:inherit;}
 .hub-name{margin-bottom:10px;}
 .hub-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:14px;}
 .hub-place{
-  font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--clay);
+  font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent-text);
 }
 .hub-dot{width:3px;height:3px;border-radius:50%;background:var(--ink-faint);}
 .hub-date{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);}
