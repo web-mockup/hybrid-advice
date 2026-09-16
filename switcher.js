@@ -7,12 +7,12 @@
   var FILES = { original: 'index.html', refined: 'refined.html' };
   var PALETTES = [
     { id: '',       name: 'Muted teal & clay',   sw: '#c96f4f' },
-    { id: 'red',    name: 'Red & grey',          sw: '#cc0000' },
+    { id: 'teal',   name: 'Teal & grey',         sw: '#00cccc' },
     { id: 'hybrid', name: 'Hybrid brand',        sw: '#c4f9a1' }
   ];
-  /* This slot was 'orange' before the red & grey recolour; shared links and
-     saved preferences still carry the old id, so it maps forward. */
-  var ALIAS = { orange: 'red' };
+  /* This slot has been 'orange' and briefly 'red'; shared links and saved
+     preferences still carry the old ids, so they map forward. */
+  var ALIAS = { orange: 'teal', red: 'teal' };
   var DESIGNS = [
     { id: 'original', label: 'Original' },
     { id: 'refined',  label: 'Refined' }

@@ -58,16 +58,25 @@
    Alternate palettes. Only the variables change - every rule below
    reads through them, including the photo grade via the -rgb channels.
 --------------------------------------------------------------- */
-:root[data-palette="red"]{
-  /* Red & grey. The grey family carries the structure - dark grounds, footer,
-     ink - and the red is the only chromatic note, so it lands every time. */
-  --teal:#333333; --teal-deep:#282828; --green-deep:#232323; --green-black:#111111;
-  --lime:#ded9d3; --clay:#cc0000; --paper:#f6f5f3; --sand:#e8e6e3;
-  --ink:#1f1f1f; --ink-mute:#5e5e5e; --ink-faint:#949494;
-  --clay-rgb:204,0,0; --teal-rgb:51,51,51; --green-deep-rgb:35,35,35;
-  --lime-rgb:222,217,211; --paper-rgb:246,245,243;
-  --rule:rgba(31,31,31,.14);
+:root[data-palette="teal"]{
+  --teal:#00cccc; --teal-deep:#008080; --green-deep:#0f3936; --green-black:#06211f;
+  --lime:#a8d8d6; --clay:#333333; --paper:#f3f7f6; --sand:#e2ebe9;
+  --ink:#0f2b29; --ink-mute:#53706d; --ink-faint:#89a09d;
+  --clay-rgb:51,51,51; --teal-rgb:0,204,204; --green-deep-rgb:15,57,54;
+  --lime-rgb:168,216,214; --paper-rgb:243,247,246;
+  --rule:rgba(15,43,41,.14);
 }
+/* #333333 does the accent's work on paper, but it sinks into the dark grounds,
+   so the two marks that sit on them take the brand teal instead - which is
+   also where #00cccc is bright enough to be used neat. */
+:root[data-palette="teal"] .concept-label .dot{background:var(--teal);}
+:root[data-palette="teal"] .n-core circle{fill:var(--teal);}
+:root[data-palette="teal"] .n-core text{fill:var(--green-black);}
+/* the shared clay hover is a hardcoded warm brown; grey needs its own */
+:root[data-palette="teal"] .btn-clay:hover{background:#1f1f1f;}
+/* and the CTA that sits on a dark ground has to leave grey behind entirely */
+:root[data-palette="teal"] .on-dark .btn-clay{background:var(--teal);color:var(--green-black);}
+:root[data-palette="teal"] .on-dark .btn-clay:hover{background:#00e5e5;}
 :root[data-palette="hybrid"]{
   --teal:#6a8d88; --teal-deep:#475b58; --green-deep:#1d3a33; --green-black:#011a15;
   --lime:#c4f9a1; --clay:#3f6b5f; --paper:#f4f6f2; --sand:#e7ebe4;

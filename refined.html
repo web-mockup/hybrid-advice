@@ -28,20 +28,31 @@
   --clay-rgb:201,111,79; --teal-rgb:106,141,136; --green-deep-rgb:47,68,65;
   --lime-rgb:196,249,161; --paper-rgb:247,244,238;
   --key-yours:#c96f4f;
+  /* the teal as it reads on paper; every palette but the bright one
+     is already dark enough, so it just tracks --teal by default */
+  --teal-ink:var(--teal);
   --rule:rgba(28,43,40,.14);
   --rule-light:rgba(247,244,238,.18);
   --container:1360px; --gutter:56px;
   --ease:cubic-bezier(.16,1,.3,1);
 }
-:root[data-palette="red"]{
-  --teal:#333333; --teal-deep:#282828; --green-deep:#232323; --green-black:#111111;
-  --lime:#ded9d3; --clay:#cc0000; --paper:#f6f5f3; --sand:#e8e6e3;
-  --ink:#1f1f1f; --ink-mute:#5e5e5e; --ink-faint:#949494;
-  --clay-rgb:204,0,0; --teal-rgb:51,51,51; --green-deep-rgb:35,35,35;
-  --lime-rgb:222,217,211; --paper-rgb:246,245,243; --rule:rgba(31,31,31,.14);
-  /* the grey side of the key - the red is --key-yours */
-  --key-yours:#cc0000;
+:root[data-palette="teal"]{
+  --teal:#00cccc; --teal-deep:#008080; --green-deep:#0f3936; --green-black:#06211f;
+  --lime:#a8d8d6; --clay:#333333; --paper:#f3f7f6; --sand:#e2ebe9;
+  --ink:#0f2b29; --ink-mute:#53706d; --ink-faint:#89a09d;
+  --clay-rgb:51,51,51; --teal-rgb:0,204,204; --green-deep-rgb:15,57,54;
+  --lime-rgb:168,216,214; --paper-rgb:243,247,246; --rule:rgba(15,43,41,.14);
+  /* this page is all light ground, where #00cccc is too pale to read as
+     a hairline or a caption, so the teal marks use the deepened tone */
+  --teal-ink:#008080;
+  --key-yours:#333333;
 }
+/* grey sinks into the dark concept pill; that dot takes the brand teal */
+:root[data-palette="teal"] .concept-label .dot{background:var(--teal);}
+/* so does the CTA on the dark contact block - its hover slides paper up
+   instead of ink, so the dark label stays readable through the wipe */
+:root[data-palette="teal"] .contact .btn-clay{background:var(--teal);color:var(--green-black);}
+:root[data-palette="teal"] .contact .btn-clay::before{background:var(--paper);}
 :root[data-palette="hybrid"]{
   --teal:#6a8d88; --teal-deep:#475b58; --green-deep:#1d3a33; --green-black:#011a15;
   --lime:#c4f9a1; --clay:#3f6b5f; --paper:#f4f6f2; --sand:#e7ebe4;
@@ -149,7 +160,7 @@ button{font:inherit;color:inherit;}
   font-size:11px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-mute);}
 .keep-col .dot{width:9px;height:9px;border-radius:50%;flex:none;}
 .dot-clay{background:var(--key-yours);}
-.dot-teal{background:var(--teal);}
+.dot-teal{background:var(--teal-ink);}
 .keep-col ul{margin:0;padding:0;list-style:none;}
 .keep-col li{padding:9px 0;border-bottom:1px solid var(--rule);font-size:1.02rem;font-weight:500;}
 .keep-col li:last-child{border-bottom:0;}
@@ -167,16 +178,16 @@ button{font:inherit;color:inherit;}
 .hub-table td.when{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);white-space:nowrap;}
 
 /* diagram parts */
-.d-core circle{fill:var(--teal);}
+.d-core circle{fill:var(--teal-ink);}
 .d-core text{fill:#fff;font-size:13px;font-weight:600;text-anchor:middle;}
 .d-you circle{fill:var(--key-yours);}
 .d-you text{fill:var(--ink-mute);font-size:10px;font-weight:600;letter-spacing:.14em;text-anchor:middle;text-transform:uppercase;}
 .d-hub circle{fill:var(--key-yours);}
-.d-link{stroke:var(--teal);stroke-width:1.6;fill:none;opacity:.55;}
+.d-link{stroke:var(--teal-ink);stroke-width:1.6;fill:none;opacity:.55;}
 .d-spoke-line{stroke:var(--ink-faint);stroke-width:1;fill:none;opacity:.5;}
 .d-spoke{fill:var(--ink-faint);}
 .d-keep{fill:var(--key-yours);}
-.d-move{fill:var(--teal);}
+.d-move{fill:var(--teal-ink);}
 .d-ring{fill:none;stroke:var(--rule);stroke-width:1;}
 
 /* ---------- contact ---------- */
