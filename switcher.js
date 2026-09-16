@@ -7,9 +7,12 @@
   var FILES = { original: 'index.html', refined: 'refined.html' };
   var PALETTES = [
     { id: '',       name: 'Muted teal & clay',   sw: '#c96f4f' },
-    { id: 'orange', name: 'Teal & orange',       sw: '#e8722f' },
+    { id: 'red',    name: 'Red & grey',          sw: '#cc0000' },
     { id: 'hybrid', name: 'Hybrid brand',        sw: '#c4f9a1' }
   ];
+  /* This slot was 'orange' before the red & grey recolour; shared links and
+     saved preferences still carry the old id, so it maps forward. */
+  var ALIAS = { orange: 'red' };
   var DESIGNS = [
     { id: 'original', label: 'Original' },
     { id: 'refined',  label: 'Refined' }
@@ -42,8 +45,10 @@
 
   function current(){
     var q = (location.search.match(/[?&]p=([a-z]*)/) || [])[1];
-    if (q !== undefined) return q;
-    try { return localStorage.getItem('palette') || ''; } catch(e){ return ''; }
+    if (q === undefined) {
+      try { q = localStorage.getItem('palette') || ''; } catch(e){ q = ''; }
+    }
+    return Object.prototype.hasOwnProperty.call(ALIAS, q) ? ALIAS[q] : q;
   }
 
   function build(){
